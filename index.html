@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEO Autopilot</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#06080f;--surface:#0d1117;--surface2:#131a24;--surface3:#1a2332;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --indigo:#6366f1;--violet:#8b5cf6;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--cyan:#06b6d4;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#4a5568;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:230px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;top:0;left:0;z-index:100;}
+.main{margin-left:230px;flex:1;padding:28px 32px;min-height:100vh;}
+.logo-wrap{padding:22px 18px 18px;border-bottom:1px solid var(--border);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--indigo),var(--violet));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 4px 12px rgba(99,102,241,.4);}
+.logo-name{font-weight:700;font-size:14px;}
+.logo-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+.nav{flex:1;padding:14px 8px;}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;margin-bottom:2px;width:100%;text-align:left;cursor:pointer;font-family:'Roboto',sans-serif;font-size:13px;font-weight:500;border:none;border-left:2px solid transparent;color:var(--text3);background:transparent;transition:all .15s;}
+.nav-btn.active{color:#fff;background:rgba(99,102,241,.18);border-left-color:var(--indigo);}
+.nav-btn:hover:not(.active){color:var(--text2);background:rgba(255,255,255,.04);}
+.nav-icon{width:18px;text-align:center;font-size:14px;}
+.new-report-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px;background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Roboto',sans-serif;margin:0 0 10px;}
+.sidebar-footer{padding:14px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.user-name{font-size:13px;font-weight:700;}
+.user-role{font-size:10px;color:var(--text3);margin-top:1px;}
+.logout-btn{background:rgba(255,255,255,.07);border:none;border-radius:7px;padding:6px 9px;cursor:pointer;color:var(--text3);font-size:13px;}
+.nav-pad{padding:0 8px 0;}
+.page{display:none;}
+.page.active{display:block;animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse 90% 60% at 50% 0%,rgba(99,102,241,.25),transparent),radial-gradient(ellipse 60% 50% at 90% 90%,rgba(139,92,246,.2),transparent),var(--bg);}
+.login-card{background:var(--surface);border:1px solid var(--border2);border-radius:22px;padding:44px;width:400px;box-shadow:0 40px 80px rgba(0,0,0,.6);}
+.login-icon{width:56px;height:56px;background:linear-gradient(135deg,var(--indigo),var(--violet));border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:24px;box-shadow:0 8px 24px rgba(99,102,241,.4);}
+.login-title{font-weight:900;font-size:24px;text-align:center;}
+.login-sub{font-size:13px;color:var(--text2);text-align:center;margin-top:4px;}
+.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:15px;font-weight:700;font-family:'Roboto',sans-serif;box-shadow:0 8px 24px rgba(99,102,241,.35);margin-top:4px;}
+.demo-note{margin-top:18px;padding:10px 14px;background:rgba(99,102,241,.08);border-radius:8px;font-size:12px;color:var(--text3);text-align:center;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;}
+.card-sm{padding:16px;}
+.page-title{font-weight:900;font-size:22px;}
+.page-sub{font-size:13px;color:var(--text2);margin-top:3px;}
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;}
+.label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.04em;}
+.form-input{width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;font-family:'Roboto',sans-serif;outline:none;}
+.form-input:focus{border-color:var(--indigo);}
+.form-select{width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;font-family:'Roboto',sans-serif;outline:none;}
+.form-textarea{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;font-family:'Roboto',sans-serif;outline:none;resize:vertical;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{margin-bottom:14px;}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.03em;}
+.badge-indigo{background:rgba(99,102,241,.18);color:#a5b4fc;}
+.badge-green{background:rgba(16,185,129,.18);color:#34d399;}
+.badge-red{background:rgba(239,68,68,.18);color:#f87171;}
+.badge-amber{background:rgba(245,158,11,.18);color:#fbbf24;}
+.badge-cyan{background:rgba(6,182,212,.18);color:#67e8f9;}
+.badge-violet{background:rgba(139,92,246,.18);color:#c4b5fd;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:'Roboto',sans-serif;border:none;transition:opacity .15s;}
+.btn:hover{opacity:.88;}
+.btn-primary{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--text2);border:1px solid var(--border2) !important;}
+.btn-green{background:linear-gradient(135deg,var(--green),#059669);color:#fff;}
+.btn-sm{padding:6px 12px;font-size:11px;}
+.flex{display:flex;}.items-center{align-items:center;}.justify-between{justify-content:space-between;}
+.gap-8{gap:8px;}.gap-12{gap:12px;}.gap-16{gap:16px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.col-layout{display:grid;grid-template-columns:1fr 290px;gap:24px;}
+.mb-14{margin-bottom:14px;}.mb-18{margin-bottom:18px;}.mb-24{margin-bottom:24px;}.mb-28{margin-bottom:28px;}
+.mt-16{margin-top:16px;}.mt-18{margin-top:18px;}.hidden{display:none;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;}
+.stat-bar{position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-icon{position:absolute;top:16px;right:16px;font-size:20px;opacity:.35;}
+.stat-val{font-weight:900;font-size:28px;margin-bottom:4px;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.stat-label{font-size:11px;color:var(--text3);font-weight:500;}
+.report-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:border-color .15s;}
+.report-row:hover{border-color:var(--border2);}
+.report-client{font-weight:700;font-size:14px;}
+.report-meta{font-size:11px;color:var(--text3);margin-top:3px;}
+.section-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.section-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.deadline-card{border-radius:10px;padding:9px 12px;margin-bottom:8px;}
+.deadline-overdue{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.25);}
+.deadline-soon{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);}
+.deadline-upcoming{background:var(--surface2);border:1px solid var(--border);}
+.score-ring{width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.score-inner{width:46px;height:46px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;}
+.score-label{font-size:10px;color:var(--text3);text-align:center;}
+.issue{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:13px;}
+.issue-critical{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);}
+.issue-warning{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);}
+.issue-info{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);}
+.issue-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.win-box{background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(6,182,212,.04));border:1px solid rgba(16,185,129,.2);border-radius:13px;padding:18px;}
+.win-title{font-weight:700;font-size:13px;color:#34d399;margin-bottom:10px;}
+.win-item{font-size:13px;color:#6ee7b7;margin-bottom:5px;}
+.step-box{background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.04));border:1px solid rgba(99,102,241,.2);border-radius:13px;padding:18px;}
+.step-title{font-weight:700;font-size:13px;color:#a5b4fc;margin-bottom:10px;}
+.step-item{font-size:13px;color:#c4b5fd;margin-bottom:5px;}
+.summary-box{background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(99,102,241,.05));border:1px solid rgba(139,92,246,.2);border-radius:13px;padding:18px;margin-bottom:18px;}
+.summary-title{font-weight:700;font-size:13px;color:#c4b5fd;margin-bottom:8px;}
+.summary-text{font-size:13px;color:#a78bfa;line-height:1.65;}
+.info-note{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15);border-radius:8px;padding:9px 14px;font-size:12px;color:#a5b4fc;display:flex;align-items:center;gap:8px;}
+.action-bar{background:linear-gradient(135deg,#0d1117,#131a24);border:1px solid var(--border2);border-radius:13px;padding:22px;display:flex;justify-content:space-between;align-items:center;}
+.health-bars{display:flex;align-items:flex-end;gap:8px;height:65px;}
+.health-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.health-bar-fill{width:100%;background:linear-gradient(to top,var(--indigo),var(--violet));border-radius:3px 3px 0 0;}
+.health-bar-label{font-size:9px;color:var(--text3);}
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;animation:fadein .3s ease;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.toast-success{background:#10b981;color:#fff;}
+.toast-error{background:#ef4444;color:#fff;}
+.toast-info{background:#6366f1;color:#fff;}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay{position:fixed;inset:0;background:rgba(6,8,15,.7);display:flex;align-items:center;justify-content:center;z-index:1000;font-size:15px;gap:12px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-card">
+    <div class="login-icon">📈</div>
+    <div class="login-title">SEO Autopilot</div>
+    <div class="login-sub">Admin Dashboard — Sign In</div>
+    <div style="margin-top:28px;" class="form-group">
+      <label class="label">Email Address</label>
+      <input class="form-input" id="login-email" type="email" value="admin@company.com">
+    </div>
+    <div class="form-group">
+      <label class="label">Password</label>
+      <input class="form-input" id="login-password" type="password" value="password123">
+    </div>
+    <div id="login-error" style="color:#ef4444;font-size:12px;margin-bottom:10px;display:none;"></div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="demo-note">Demo credentials already filled in ↑</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app" class="app" style="display:none;">
+  <aside class="sidebar">
+    <div class="logo-wrap">
+      <div class="logo">
+        <div class="logo-icon">📈</div>
+        <div>
+          <div class="logo-name">SEO Autopilot</div>
+          <div class="logo-sub">AI-Powered Reports</div>
+        </div>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" onclick="nav('dashboard',this)"><span class="nav-icon">⬡</span>Dashboard</button>
+      <button class="nav-btn" onclick="nav('projects',this)"><span class="nav-icon">📁</span>Projects</button>
+      <button class="nav-btn" onclick="nav('clients',this)"><span class="nav-icon">👥</span>Clients</button>
+      <button class="nav-btn" onclick="nav('deadlines',this)"><span class="nav-icon">⏰</span>Deadlines</button>
+    </nav>
+    <div class="nav-pad">
+      <button class="new-report-btn" onclick="nav('new-report',null)">📄 New Report</button>
+    </div>
+    <div class="sidebar-footer">
+      <div>
+        <div class="user-name" id="sidebar-user-name">—</div>
+        <div class="user-role" id="sidebar-user-role">—</div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">⎋</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div><div class="page-title">Admin Command Center</div><div class="page-sub" id="dash-date"></div></div>
+        <button class="btn btn-primary" onclick="nav('new-report',null)">+ New Report</button>
+      </div>
+      <div class="grid-4 mb-28" id="dash-stats">
+        <div class="stat-card"><div class="stat-bar" style="background:linear-gradient(90deg,#6366f1,#8b5cf6)"></div><div class="stat-icon">📁</div><div class="stat-val" id="stat-projects" style="background-image:linear-gradient(135deg,#6366f1,#8b5cf6)">—</div><div class="stat-label">Active Projects</div></div>
+        <div class="stat-card"><div class="stat-bar" style="background:linear-gradient(90deg,#8b5cf6,#06b6d4)"></div><div class="stat-icon">👥</div><div class="stat-val" id="stat-clients" style="background-image:linear-gradient(135deg,#8b5cf6,#06b6d4)">—</div><div class="stat-label">Active Clients</div></div>
+        <div class="stat-card"><div class="stat-bar" style="background:linear-gradient(90deg,#f59e0b,#ef4444)"></div><div class="stat-icon">📋</div><div class="stat-val" id="stat-pending" style="background-image:linear-gradient(135deg,#f59e0b,#ef4444)">—</div><div class="stat-label">Pending Review</div></div>
+        <div class="stat-card"><div class="stat-bar" style="background:linear-gradient(90deg,#10b981,#06b6d4)"></div><div class="stat-icon">🚨</div><div class="stat-val" id="stat-overdue" style="background-image:linear-gradient(135deg,#10b981,#06b6d4)">—</div><div class="stat-label">Overdue</div></div>
+      </div>
+      <div class="col-layout">
+        <div id="dash-reports-col"><div style="color:var(--text3);font-size:13px">Loading reports…</div></div>
+        <div>
+          <div class="card card-sm mb-18" style="padding:16px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">⏰ Deadlines</div>
+            <div id="dash-deadlines"><div style="color:var(--text3);font-size:12px">Loading…</div></div>
+          </div>
+          <div class="card" style="padding:16px;">
+            <div style="font-size:10px;font-weight:700;color:#f87171;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">⚠️ Churn Risk</div>
+            <div id="dash-churn"><div style="color:var(--text3);font-size:12px">Loading…</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div id="page-projects" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Projects</div><div class="page-sub" id="proj-sub">Loading…</div></div>
+        <button class="btn btn-primary" onclick="toggleForm('proj-form')">+ Add Project</button>
+      </div>
+      <div id="proj-form" class="card mb-24 hidden">
+        <div style="font-weight:700;font-size:15px;margin-bottom:18px">New Project</div>
+        <div class="form-grid mb-18">
+          <div><label class="label">Project Name *</label><input class="form-input" id="proj-name" placeholder="TechCorp SEO Campaign"></div>
+          <div><label class="label">Client *</label><select class="form-select" id="proj-client-id"><option value="">— Select Client —</option></select></div>
+          <div><label class="label">Report Type *</label><select class="form-select" id="proj-freq"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="biweekly">Biweekly (15 days)</option></select></div>
+          <div><label class="label">Assigned To</label><input class="form-input" id="proj-assigned" value="seo@company.com"></div>
+          <div><label class="label">Google Doc Link</label><input class="form-input" id="proj-doc" placeholder="https://docs.google.com/document/d/..."></div>
+          <div><label class="label">Google Sheet Link</label><input class="form-input" id="proj-sheet" placeholder="https://docs.google.com/spreadsheets/d/..."></div>
+        </div>
+        <div class="flex gap-8">
+          <button class="btn btn-primary btn-sm" id="proj-submit-btn" onclick="createProject()">Create Project</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleForm('proj-form')">Cancel</button>
+        </div>
+      </div>
+      <div id="proj-list" style="display:grid;gap:11px"><div style="color:var(--text3);font-size:13px">Loading projects…</div></div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div id="page-clients" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Clients</div><div class="page-sub" id="clients-sub">Loading…</div></div>
+        <button class="btn btn-primary" onclick="toggleForm('client-form')">+ Add Client</button>
+      </div>
+      <div id="client-form" class="card mb-24 hidden">
+        <div style="font-weight:700;font-size:15px;margin-bottom:18px">New Client</div>
+        <div class="form-grid mb-18">
+          <div><label class="label">Contact Name *</label><input class="form-input" id="c-name" placeholder="Rahul Sharma"></div>
+          <div><label class="label">Company Name *</label><input class="form-input" id="c-company" placeholder="TechCorp India"></div>
+          <div><label class="label">Email *</label><input class="form-input" id="c-email" placeholder="rahul@techcorp.in"></div>
+          <div><label class="label">Phone</label><input class="form-input" id="c-phone" placeholder="+91 98765 43210"></div>
+          <div><label class="label">Industry</label><input class="form-input" id="c-industry" placeholder="E-commerce"></div>
+          <div><label class="label">Website</label><input class="form-input" id="c-website" placeholder="techcorp.in"></div>
+          <div><label class="label">Google Sheet Link</label><input class="form-input" id="c-sheet" placeholder="https://docs.google.com/spreadsheets/d/..."></div>
+          <div><label class="label">Google Doc Link</label><input class="form-input" id="c-doc" placeholder="https://docs.google.com/document/d/..."></div>
+          <div><label class="label">Data Source</label><select class="form-select" id="c-source"><option value="sheet">Google Sheet</option><option value="doc">Google Doc</option><option value="manual">Manual</option></select></div>
+          <div><label class="label">Report Frequency</label><select class="form-select" id="c-freq"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="biweekly">Biweekly</option></select></div>
+          <div><label class="label">Email Tone</label><select class="form-select" id="c-tone"><option value="friendly">Friendly</option><option value="formal">Formal</option><option value="brief">Brief</option></select></div>
+        </div>
+        <div class="flex gap-8">
+          <button class="btn btn-primary btn-sm" id="client-submit-btn" onclick="createClient()">Add Client</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleForm('client-form')">Cancel</button>
+        </div>
+      </div>
+      <div id="client-list" style="display:grid;gap:10px"><div style="color:var(--text3);font-size:13px">Loading clients…</div></div>
+    </div>
+
+    <!-- CLIENT DETAIL -->
+    <div id="page-client-detail" class="page">
+      <div class="flex items-center gap-16 mb-28">
+        <button class="btn btn-ghost btn-sm" onclick="nav('clients',null)">‹ Clients</button>
+        <div id="cd-title" class="page-title"></div>
+      </div>
+      <div class="grid-2 mb-18">
+        <div class="card"><div style="font-weight:700;font-size:14px;margin-bottom:16px">Client Health</div><div class="flex justify-between items-center" style="text-align:center"><div><div id="cd-score" style="font-weight:900;font-size:52px;line-height:1"></div><div style="font-size:11px;color:var(--text3);margin-top:4px">Health Score</div></div><div><div id="cd-risk" style="font-weight:800;font-size:18px;margin-top:8px"></div><div style="font-size:11px;color:var(--text3);margin-top:4px">Churn Risk</div></div></div></div>
+        <div class="card"><div style="font-weight:700;font-size:14px;margin-bottom:14px">Contact Info</div><div id="cd-info"></div></div>
+      </div>
+    </div>
+
+    <!-- DEADLINES -->
+    <div id="page-deadlines" class="page">
+      <div class="mb-28"><div class="page-title">Deadline Tracker</div><div class="page-sub">All upcoming report deadlines</div></div>
+      <div id="deadlines-list" style="display:grid;gap:11px"><div style="color:var(--text3);font-size:13px">Loading deadlines…</div></div>
+    </div>
+
+    <!-- NEW REPORT -->
+    <div id="page-new-report" class="page">
+      <div class="flex items-center gap-16 mb-28">
+        <button class="btn btn-ghost btn-sm" onclick="nav('dashboard',null)">‹ Back</button>
+        <div><div class="page-title">New Report</div><div class="page-sub">Submit a report for AI analysis</div></div>
+      </div>
+      <div style="max-width:660px">
+        <div class="card mb-18">
+          <div style="font-weight:700;font-size:14px;margin-bottom:18px">Report Details</div>
+          <div class="form-group"><label class="label">Select Project *</label><select class="form-select" id="nr-project"><option value="">— Choose project —</option></select></div>
+          <div class="form-group"><label class="label">Report Period *</label><input class="form-input" id="nr-period" placeholder="e.g. March 2026 or Week 1 March 2026"></div>
+          <div style="background:var(--surface2);border-radius:9px;padding:13px;border:1px solid var(--border);font-size:13px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;font-weight:600;color:var(--text2)"><span style="color:#6366f1">📊</span>Auto Data Fetch</div><div style="font-size:12px;color:var(--text3)">Data will be automatically pulled from this client's linked Google Sheet or Doc. Paste below only to override.</div></div>
+        </div>
+        <div class="card mb-22">
+          <div style="font-weight:700;font-size:14px;margin-bottom:5px">📄 Manual Override <span style="font-size:11px;color:var(--text3);font-weight:400">(Optional)</span></div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Leave blank to use Google data automatically.</div>
+          <textarea class="form-textarea" id="nr-content" style="min-height:140px;font-family:'Roboto Mono',monospace;font-size:12px" placeholder="Paste report content here (optional)...&#10;&#10;Organic Traffic: 12,450 (+23%)&#10;Top Keyword: 'digital marketing' - Rank 4&#10;..."></textarea>
+        </div>
+        <button id="nr-submit-btn" onclick="submitReport()" style="width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:15px;font-weight:700;font-family:'Roboto',sans-serif;box-shadow:0 8px 24px rgba(99,102,241,.3)">Submit for AI Analysis →</button>
+      </div>
+    </div>
+
+    <!-- REPORT REVIEW -->
+    <div id="page-report-review" class="page">
+      <div class="flex items-center gap-16 mb-28" style="flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="nav('dashboard',null)">‹ Back</button>
+        <div style="flex:1"><div id="rr-title" class="page-title" style="font-size:20px"></div><div id="rr-sub" style="font-size:11px;color:var(--text2);margin-top:3px"></div></div>
+        <span id="rr-status-badge" class="badge badge-indigo"></span>
+      </div>
+      <div class="card mb-18">
+        <div style="font-weight:700;font-size:14px;margin-bottom:18px">🤖 AI Analysis Results</div>
+        <div class="grid-4"><div id="ring-0"></div><div id="ring-1"></div><div id="ring-2"></div><div id="ring-3"></div></div>
+      </div>
+      <div class="card mb-18" id="rr-issues-card"><div style="font-weight:700;font-size:14px;margin-bottom:14px">⚠️ Issues Found</div><div id="rr-issues"></div></div>
+      <div class="grid-2 mb-18">
+        <div class="win-box"><div class="win-title">🏆 Key Wins</div><div id="rr-wins"></div></div>
+        <div class="step-box"><div class="step-title">📌 Next Steps</div><div id="rr-steps"></div></div>
+      </div>
+      <div class="summary-box"><div class="summary-title">📄 Executive Summary</div><div id="rr-summary" class="summary-text"></div></div>
+      <div class="card mb-18">
+        <div class="flex justify-between items-center mb-18">
+          <div style="font-weight:700;font-size:14px">📧 AI-Drafted Email</div>
+          <button class="btn btn-ghost btn-sm" onclick="regenerateEmail()">↻ Regenerate</button>
+        </div>
+        <div class="form-group"><label class="label">Subject Line</label><input class="form-input" id="rr-subject"></div>
+        <div class="form-group">
+          <label class="label">Email Body</label>
+          <textarea class="form-textarea" id="rr-body" style="min-height:155px"></textarea>
+        </div>
+        <div class="info-note">ℹ️ Copy this email → send manually from Gmail → click "Mark as Sent" below</div>
+      </div>
+      <div class="card mb-18">
+        <label class="label">📝 Admin Notes <span style="color:var(--text3);font-weight:400;font-size:11px">(Internal only)</span></label>
+        <textarea class="form-textarea" id="rr-notes" style="min-height:75px;margin-top:8px" placeholder="Add internal notes for your team..."></textarea>
+        <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="saveNotes()">Save Notes</button>
+      </div>
+      <div class="action-bar">
+        <div>
+          <div id="rr-action-label" style="font-weight:700;font-size:15px"></div>
+          <div id="rr-action-email" style="font-size:11px;color:var(--text3);margin-top:4px"></div>
+        </div>
+        <div class="flex gap-12" id="rr-action-btns"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────
+const API = 'https://seo-automation-p01f.onrender.com/api';
+let TOKEN = localStorage.getItem('seo_token') || '';
+let CURRENT_REPORT = null;
+let ALL_PROJECTS = [];
+let ALL_CLIENTS = [];
+
+// ── API HELPER ────────────────────────────────────────────────
+async function api(method, path, body) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(API + path, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Request failed');
+  return data;
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function toast(msg, type='info') {
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ── AUTH ──────────────────────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('login-email').value;
+  const pass  = document.getElementById('login-password').value;
+  const btn   = document.getElementById('login-btn');
+  const err   = document.getElementById('login-error');
+  btn.innerHTML = '<span class="spinner"></span> Signing in…';
+  btn.disabled = true;
+  err.style.display = 'none';
+  try {
+    const data = await api('POST', '/auth/login', { email, password: pass });
+    TOKEN = data.token;
+    localStorage.setItem('seo_token', TOKEN);
+    document.getElementById('sidebar-user-name').textContent = data.user.name;
+    document.getElementById('sidebar-user-role').textContent = data.user.role;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'flex';
+    loadDashboard();
+  } catch(e) {
+    err.textContent = e.message;
+    err.style.display = 'block';
+  } finally {
+    btn.innerHTML = 'Sign In →';
+    btn.disabled = false;
+  }
+}
+
+function doLogout() {
+  TOKEN = '';
+  localStorage.removeItem('seo_token');
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+// Auto-login if token exists
+if (TOKEN) {
+  api('GET', '/auth/me').then(d => {
+    document.getElementById('sidebar-user-name').textContent = d.user.name;
+    document.getElementById('sidebar-user-role').textContent = d.user.role;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'flex';
+    loadDashboard();
+  }).catch(() => { TOKEN = ''; localStorage.removeItem('seo_token'); });
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────
+function nav(pageId, btnEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + pageId);
+  if (pg) pg.classList.add('active');
+  if (btnEl) {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+  }
+  if (pageId === 'dashboard')  loadDashboard();
+  if (pageId === 'projects')   loadProjects();
+  if (pageId === 'clients')    loadClients();
+  if (pageId === 'deadlines')  loadDeadlines();
+  if (pageId === 'new-report') loadNewReportForm();
+}
+
+function toggleForm(id) {
+  document.getElementById(id).classList.toggle('hidden');
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+async function loadDashboard() {
+  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-IN', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  try {
+    const d = await api('GET', '/dashboard');
+    document.getElementById('stat-projects').textContent = d.stats.activeProjects;
+    document.getElementById('stat-clients').textContent  = d.stats.totalClients;
+    document.getElementById('stat-pending').textContent  = d.stats.pendingReview;
+    document.getElementById('stat-overdue').textContent  = d.stats.overdueCount;
+
+    // Reports column
+    const col = document.getElementById('dash-reports-col');
+    const reports = d.recentReports || [];
+    if (!reports.length) { col.innerHTML = '<div style="color:var(--text3);font-size:13px">No reports yet.</div>'; }
+    else {
+      const critical = reports.filter(r => (r.ai_analysis?.overallScore||100) < 60);
+      const warning  = reports.filter(r => { const s=r.ai_analysis?.overallScore||100; return s>=60&&s<75; });
+      const good     = reports.filter(r => (r.ai_analysis?.overallScore||100) >= 75 && r.admin_status==='pending_review');
+      const approved = reports.filter(r => r.admin_status==='approved');
+      let html = '';
+      if (critical.length) {
+        html += `<div class="section-head"><div class="section-dot" style="background:#ef4444;box-shadow:0 0 8px #ef4444"></div><span style="font-weight:700;font-size:12px;color:#f87171;letter-spacing:.04em">🚨 IMMEDIATE ATTENTION (${critical.length})</span></div>`;
+        critical.forEach(r => html += reportRow(r));
+      }
+      if (warning.length) {
+        html += `<div class="section-head mt-18"><div class="section-dot" style="background:#f59e0b"></div><span style="font-weight:700;font-size:12px;color:#fbbf24;letter-spacing:.04em">⚠️ REVIEW NEEDED (${warning.length})</span></div>`;
+        warning.forEach(r => html += reportRow(r));
+      }
+      if (good.length) {
+        html += `<div class="section-head mt-18"><div class="section-dot" style="background:#10b981;box-shadow:0 0 8px #10b981"></div><span style="font-weight:700;font-size:12px;color:#34d399;letter-spacing:.04em">✅ GOOD — PENDING REVIEW (${good.length})</span></div>`;
+        good.forEach(r => html += reportRow(r));
+      }
+      if (approved.length) {
+        html += `<div class="section-head mt-18"><div class="section-dot" style="background:#06b6d4"></div><span style="font-weight:700;font-size:12px;color:#67e8f9;letter-spacing:.04em">📬 APPROVED — READY TO SEND (${approved.length})</span></div>`;
+        approved.forEach(r => html += reportRow(r));
+      }
+      col.innerHTML = html || '<div style="color:var(--text3);font-size:13px">No pending reports.</div>';
+    }
+
+    // Deadlines
+    const dlEl = document.getElementById('dash-deadlines');
+    const dls = [...(d.overdueDeadlines||[]), ...(d.dueSoonDeadlines||[])];
+    if (!dls.length) { dlEl.innerHTML = '<div style="color:var(--text3);font-size:12px">No urgent deadlines 🎉</div>'; }
+    else {
+      dlEl.innerHTML = dls.map(dl => {
+        const days = Math.round((new Date(dl.due_date) - Date.now()) / 86400000);
+        const cls  = dl.status==='overdue' ? 'deadline-overdue' : 'deadline-soon';
+        const col  = dl.status==='overdue' ? '#ef4444' : '#f59e0b';
+        const label = dl.status==='overdue' ? `${Math.abs(days)} days overdue` : days===0 ? 'Due Today!' : `${days} day${days!==1?'s':''} left`;
+        return `<div class="deadline-card ${cls}"><div style="font-weight:700;font-size:13px">${dl.clients?.company_name||'—'}</div><div style="font-size:10px;color:var(--text3);margin-top:2px">${dl.report_period}</div><div style="font-size:11px;font-weight:700;color:${col};margin-top:5px">${label}</div></div>`;
+      }).join('');
+    }
+
+    // Churn
+    const churnEl = document.getElementById('dash-churn');
+    const churn = d.criticalClients || [];
+    if (!churn.length) { churnEl.innerHTML = '<div style="color:var(--text3);font-size:12px">No churn risks 🎉</div>'; }
+    else {
+      churnEl.innerHTML = churn.map(c => `<div style="padding:10px 12px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:8px;margin-bottom:8px"><div style="font-weight:700;font-size:13px">${c.company_name}</div><div style="font-size:11px;color:#ef4444;margin-top:4px">Health: ${c.health_score}% · Risk: ${c.churn_risk.toUpperCase()}</div></div>`).join('');
+    }
+  } catch(e) { toast('Dashboard error: ' + e.message, 'error'); }
+}
+
+function reportRow(r) {
+  const score = r.ai_analysis?.overallScore ?? '—';
+  const scoreCls = score >= 75 ? 'badge-green' : score >= 55 ? 'badge-amber' : 'badge-red';
+  const freqCls  = r.report_frequency==='weekly' ? 'badge-cyan' : r.report_frequency==='biweekly' ? 'badge-indigo' : 'badge-violet';
+  return `<div class="report-row" onclick="openReport('${r.id}')">
+    <div><div class="flex items-center gap-8" style="margin-bottom:3px"><span class="report-client">${r.clients?.company_name||'—'}</span><span class="badge ${freqCls}">${(r.report_frequency||'').toUpperCase()}</span></div><div class="report-meta">${r.report_period} · ${r.projects?.name||'—'}</div></div>
+    <div class="flex items-center gap-8"><span class="badge ${scoreCls}">${score}/100</span><span style="color:#6366f1;font-size:11px;font-weight:600">›</span></div>
+  </div>`;
+}
+
+// ── PROJECTS ──────────────────────────────────────────────────
+async function loadProjects() {
+  try {
+    const data = await api('GET', '/projects?limit=50');
+    ALL_PROJECTS = data.projects || [];
+    document.getElementById('proj-sub').textContent = `${ALL_PROJECTS.length} active projects`;
+    const list = document.getElementById('proj-list');
+    if (!ALL_PROJECTS.length) { list.innerHTML = '<div style="color:var(--text3);font-size:13px">No projects yet. Click "+ Add Project" to create one.</div>'; return; }
+    list.innerHTML = ALL_PROJECTS.map(p => {
+      const srcBadge = p.data_source==='sheet'?'📊 SHEET':p.data_source==='doc'?'📄 DOC':'✍️ MANUAL';
+      const freqCls  = p.report_frequency==='weekly'?'badge-cyan':p.report_frequency==='biweekly'?'badge-indigo':'badge-violet';
+      const due = p.next_deadline ? new Date(p.next_deadline).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—';
+      const isOverdue = p.next_deadline && new Date(p.next_deadline) < new Date();
+      return `<div class="card" style="padding:15px 20px${isOverdue?';background:rgba(239,68,68,.03);border-color:rgba(239,68,68,.2)':''}">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-12">
+            <div style="width:40px;height:40px;background:rgba(99,102,241,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">📁</div>
+            <div><div style="font-weight:700;font-size:14px">${p.name}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${p.clients?.company_name||'—'} · ${p.report_frequency||'—'}</div></div>
+          </div>
+          <div class="flex gap-8"><span class="badge ${freqCls}">${(p.report_frequency||'').toUpperCase()}</span><span class="badge badge-green">${srcBadge}</span></div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:${isOverdue?'#ef4444':'var(--text3)'}">
+          ${isOverdue?'⚠️ OVERDUE — ':'Next: '}<strong style="color:${isOverdue?'#ef4444':'var(--text2)'}">${due}</strong> · Assigned: <strong style="color:var(--text2)">${p.assigned_to||'—'}</strong>
+        </div>
+      </div>`;
+    }).join('');
+    populateClientDropdown();
+  } catch(e) { toast('Projects error: ' + e.message, 'error'); }
+}
+
+async function populateClientDropdown() {
+  if (!ALL_CLIENTS.length) {
+    const data = await api('GET', '/clients?limit=100');
+    ALL_CLIENTS = data.clients || [];
+  }
+  const sel = document.getElementById('proj-client-id');
+  sel.innerHTML = '<option value="">— Select Client —</option>' + ALL_CLIENTS.map(c => `<option value="${c.id}">${c.company_name}</option>`).join('');
+}
+
+async function createProject() {
+  const name       = document.getElementById('proj-name').value.trim();
+  const clientId   = document.getElementById('proj-client-id').value;
+  const reportFreq = document.getElementById('proj-freq').value;
+  const assignedTo = document.getElementById('proj-assigned').value.trim();
+  const googleDocLink   = document.getElementById('proj-doc').value.trim();
+  const googleSheetLink = document.getElementById('proj-sheet').value.trim();
+  if (!name || !clientId) { toast('Project name and client are required', 'error'); return; }
+  const btn = document.getElementById('proj-submit-btn');
+  btn.innerHTML = '<span class="spinner"></span> Creating…';
+  btn.disabled = true;
+  try {
+    await api('POST', '/projects', { name, clientId, reportFrequency: reportFreq, assignedTo, googleDocLink, googleSheetLink, dataSource: googleSheetLink ? 'sheet' : googleDocLink ? 'doc' : 'inherit' });
+    toast('Project created!', 'success');
+    toggleForm('proj-form');
+    document.getElementById('proj-name').value = '';
+    loadProjects();
+  } catch(e) { toast(e.message, 'error'); }
+  finally { btn.innerHTML = 'Create Project'; btn.disabled = false; }
+}
+
+// ── CLIENTS ───────────────────────────────────────────────────
+async function loadClients() {
+  try {
+    const data = await api('GET', '/clients?limit=100');
+    ALL_CLIENTS = data.clients || [];
+    document.getElementById('clients-sub').textContent = `${ALL_CLIENTS.length} active clients`;
+    const list = document.getElementById('client-list');
+    if (!ALL_CLIENTS.length) { list.innerHTML = '<div style="color:var(--text3);font-size:13px">No clients yet. Click "+ Add Client" to create one.</div>'; return; }
+    list.innerHTML = ALL_CLIENTS.map((c, i) => {
+      const hc = c.health_score >= 80 ? '#10b981' : c.health_score >= 60 ? '#f59e0b' : '#ef4444';
+      const riskBadge = c.churn_risk==='low'?'badge-green':c.churn_risk==='medium'?'badge-amber':'badge-red';
+      const riskLabel = c.churn_risk==='low'?'🟢 LOW':c.churn_risk==='medium'?'🟡 MEDIUM':'🔴 HIGH';
+      const letter = (c.company_name||'?')[0].toUpperCase();
+      const bg = c.churn_risk==='high'?'linear-gradient(135deg,#ef4444,#dc2626)':c.churn_risk==='medium'?'linear-gradient(135deg,#f59e0b,#d97706)':'linear-gradient(135deg,#6366f1,#8b5cf6)';
+      return `<div class="card" style="padding:13px 20px;cursor:pointer" onclick="openClient('${c.id}')">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-12">
+            <div style="width:42px;height:42px;border-radius:12px;background:${bg};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px">${letter}</div>
+            <div><div style="font-weight:700;font-size:14px">${c.company_name}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${c.name} · ${c.email}</div></div>
+          </div>
+          <div class="flex items-center gap-12">
+            <div style="text-align:right"><div style="font-weight:900;font-size:22px;color:${hc}">${c.health_score}%</div><div style="font-size:10px;color:var(--text3)">Health</div></div>
+            <span class="badge ${riskBadge}">${riskLabel}</span>
+            <span style="color:var(--text3)">›</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { toast('Clients error: ' + e.message, 'error'); }
+}
+
+async function createClient() {
+  const name        = document.getElementById('c-name').value.trim();
+  const companyName = document.getElementById('c-company').value.trim();
+  const email       = document.getElementById('c-email').value.trim();
+  if (!name || !companyName || !email) { toast('Name, company and email are required', 'error'); return; }
+  const btn = document.getElementById('client-submit-btn');
+  btn.innerHTML = '<span class="spinner"></span> Creating…';
+  btn.disabled = true;
+  try {
+    await api('POST', '/clients', {
+      name, companyName, email,
+      phone:           document.getElementById('c-phone').value.trim(),
+      industry:        document.getElementById('c-industry').value.trim(),
+      website:         document.getElementById('c-website').value.trim(),
+      googleSheetLink: document.getElementById('c-sheet').value.trim(),
+      googleDocLink:   document.getElementById('c-doc').value.trim(),
+      dataSource:      document.getElementById('c-source').value,
+      reportFrequency: document.getElementById('c-freq').value,
+      emailTone:       document.getElementById('c-tone').value,
+    });
+    toast('Client added!', 'success');
+    toggleForm('client-form');
+    ['c-name','c-company','c-email','c-phone','c-industry','c-website','c-sheet','c-doc'].forEach(id => document.getElementById(id).value = '');
+    loadClients();
+  } catch(e) { toast(e.message, 'error'); }
+  finally { btn.innerHTML = 'Add Client'; btn.disabled = false; }
+}
+
+async function openClient(id) {
+  try {
+    const data = await api('GET', `/clients/${id}`);
+    const c = data.client;
+    document.getElementById('cd-title').textContent = c.company_name;
+    const hc = c.health_score >= 80 ? '#10b981' : c.health_score >= 60 ? '#f59e0b' : '#ef4444';
+    document.getElementById('cd-score').style.color = hc;
+    document.getElementById('cd-score').textContent = c.health_score + '%';
+    document.getElementById('cd-risk').textContent  = c.churn_risk==='low'?'🟢 LOW':c.churn_risk==='medium'?'🟡 MEDIUM':'🔴 HIGH';
+    document.getElementById('cd-info').innerHTML = [
+      ['Contact', c.name], ['Email', c.email], ['Phone', c.phone||'—'],
+      ['Industry', c.industry||'—'], ['Website', c.website||'—'],
+      ['Report Frequency', c.report_frequency],
+      ['Data Source', c.data_source==='sheet'?'📊 Google Sheet':c.data_source==='doc'?'📄 Google Doc':'✍️ Manual'],
+      ['Email Tone', c.email_tone],
+    ].map(([k,v]) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--text3)">${k}</span><span style="font-weight:600">${v}</span></div>`).join('');
+    nav('client-detail', null);
+  } catch(e) { toast('Client error: ' + e.message, 'error'); }
+}
+
+// ── DEADLINES ─────────────────────────────────────────────────
+async function loadDeadlines() {
+  try {
+    const data = await api('GET', '/deadlines?limit=30');
+    const dls = data.deadlines || [];
+    const list = document.getElementById('deadlines-list');
+    if (!dls.length) { list.innerHTML = '<div style="color:var(--text3);font-size:13px">No deadlines found.</div>'; return; }
+    list.innerHTML = dls.map(dl => {
+      const days = Math.round((new Date(dl.due_date) - Date.now()) / 86400000);
+      const isOverdue  = dl.status === 'overdue';
+      const isSoon     = dl.status === 'due_soon';
+      const cls  = isOverdue ? 'background:rgba(239,68,68,.04);border-color:rgba(239,68,68,.25)' : isSoon ? 'background:rgba(245,158,11,.04);border-color:rgba(245,158,11,.25)' : '';
+      const icon = isOverdue ? '🚨' : isSoon ? '⏰' : '✅';
+      const iconBg = isOverdue ? 'rgba(239,68,68,.12)' : isSoon ? 'rgba(245,158,11,.12)' : 'rgba(16,185,129,.1)';
+      const col  = isOverdue ? '#ef4444' : isSoon ? '#f59e0b' : '#10b981';
+      const label = isOverdue ? `${Math.abs(days)} days overdue` : days === 0 ? 'Due Today!' : days === 1 ? 'Due Tomorrow!' : `${days} days left`;
+      const badgeCls = isOverdue ? 'badge-red' : isSoon ? 'badge-amber' : 'badge-green';
+      const badgeLabel = isOverdue ? 'OVERDUE' : isSoon ? 'DUE SOON' : 'UPCOMING';
+      return `<div class="card" style="padding:15px 20px;display:flex;justify-content:space-between;align-items:center;${cls}">
+        <div class="flex items-center gap-16">
+          <div style="width:40px;height:40px;border-radius:10px;background:${iconBg};display:flex;align-items:center;justify-content:center;font-size:18px">${icon}</div>
+          <div><div style="font-weight:700;font-size:14px">${dl.clients?.company_name||'—'}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${dl.projects?.name||'—'} · ${dl.report_period}</div></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:13px;font-weight:700;color:${col}">${label}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${new Date(dl.due_date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+          <div style="margin-top:6px"><span class="badge ${badgeCls}">${badgeLabel}</span></div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { toast('Deadlines error: ' + e.message, 'error'); }
+}
+
+// ── NEW REPORT ────────────────────────────────────────────────
+async function loadNewReportForm() {
+  try {
+    if (!ALL_PROJECTS.length) {
+      const data = await api('GET', '/projects?limit=100');
+      ALL_PROJECTS = data.projects || [];
+    }
+    const sel = document.getElementById('nr-project');
+    sel.innerHTML = '<option value="">— Choose project —</option>' + ALL_PROJECTS.map(p => `<option value="${p.id}">${p.clients?.company_name||'?'} — ${p.name} (${p.report_frequency||'—'})</option>`).join('');
+  } catch(e) { toast('Error loading projects: ' + e.message, 'error'); }
+}
+
+async function submitReport() {
+  const projectId    = document.getElementById('nr-project').value;
+  const reportPeriod = document.getElementById('nr-period').value.trim();
+  const manualContent = document.getElementById('nr-content').value.trim();
+  if (!projectId || !reportPeriod) { toast('Select a project and enter a report period', 'error'); return; }
+  const btn = document.getElementById('nr-submit-btn');
+  btn.innerHTML = '<span class="spinner"></span> Submitting & running AI analysis…';
+  btn.disabled = true;
+  try {
+    const data = await api('POST', '/reports', { projectId, reportPeriod, manualContent: manualContent || undefined });
+    toast('Report submitted! AI is analyzing — check back in ~30 seconds', 'success');
+    document.getElementById('nr-period').value  = '';
+    document.getElementById('nr-content').value = '';
+    setTimeout(() => { nav('dashboard', null); loadDashboard(); }, 2000);
+  } catch(e) { toast(e.message, 'error'); }
+  finally { btn.innerHTML = 'Submit for AI Analysis →'; btn.disabled = false; }
+}
+
+// ── REPORT REVIEW ─────────────────────────────────────────────
+async function openReport(id) {
+  try {
+    const data = await api('GET', `/reports/${id}`);
+    const r = data.report;
+    CURRENT_REPORT = r;
+    const ai = r.ai_analysis || {};
+    const em = r.draft_email  || {};
+
+    document.getElementById('rr-title').textContent = `${r.clients?.company_name||'—'} — ${r.report_period}`;
+    document.getElementById('rr-sub').textContent   = `${r.projects?.name||'—'} · ${r.report_frequency||'—'} report`;
+
+    const sb = document.getElementById('rr-status-badge');
+    const statusMap = { sent:'✅ SENT', approved:'✓ APPROVED', pending_review:'PENDING REVIEW', pending_ai:'⏳ AI RUNNING' };
+    const clsMap    = { sent:'badge-green', approved:'badge-cyan', pending_review:'badge-indigo', pending_ai:'badge-amber' };
+    sb.textContent = statusMap[r.admin_status] || r.admin_status;
+    sb.className   = 'badge ' + (clsMap[r.admin_status] || 'badge-indigo');
+
+    // Score rings
+    const scores = [ai.overallScore, ai.contentQuality, ai.dataAccuracy, ai.clientGoalsMatch];
+    const labels = ['Overall Score', 'Content Quality', 'Data Accuracy', 'Goals Match'];
+    scores.forEach((sc, i) => {
+      const v = sc ?? 0;
+      const color = v >= 75 ? '#10b981' : v >= 55 ? '#f59e0b' : '#ef4444';
+      const deg   = (v / 100) * 360;
+      document.getElementById('ring-' + i).innerHTML = `<div style="text-align:center"><div class="score-ring" style="background:conic-gradient(${color} ${deg}deg,rgba(255,255,255,.08) 0)"><div class="score-inner" style="color:${color}">${v}</div></div><div class="score-label">${labels[i]}</div></div>`;
+    });
+
+    // Issues
+    const issues = ai.issues || [];
+    const issCard = document.getElementById('rr-issues-card');
+    if (!issues.length) { issCard.style.display = 'none'; }
+    else {
+      issCard.style.display = 'block';
+      document.getElementById('rr-issues').innerHTML = issues.map(iss => `<div class="issue issue-${iss.severity}"><span class="issue-icon" style="color:${iss.severity==='critical'?'#ef4444':iss.severity==='warning'?'#f59e0b':'#6366f1'}">${iss.severity==='info'?'ℹ':'⚠'}</span><span>${iss.message}</span></div>`).join('');
+    }
+
+    document.getElementById('rr-wins').innerHTML    = (ai.keyWins||[]).map(w=>`<div class="win-item">• ${w}</div>`).join('') || '<div class="win-item" style="color:var(--text3)">No wins recorded yet</div>';
+    document.getElementById('rr-steps').innerHTML   = (ai.nextSteps||[]).map(s=>`<div class="step-item">• ${s}</div>`).join('') || '<div class="step-item" style="color:var(--text3)">No steps recorded yet</div>';
+    document.getElementById('rr-summary').textContent = ai.executiveSummary || '—';
+    document.getElementById('rr-subject').value     = em.subject || '';
+    document.getElementById('rr-body').value        = em.body || '';
+    document.getElementById('rr-notes').value       = r.admin_notes || '';
+    document.getElementById('rr-action-email').textContent = r.clients?.email ? 'To: ' + r.clients.email : '';
+
+    updateActionBar();
+    nav('report-review', null);
+  } catch(e) { toast('Report error: ' + e.message, 'error'); }
+}
+
+function updateActionBar() {
+  const r = CURRENT_REPORT;
+  if (!r) return;
+  const label = document.getElementById('rr-action-label');
+  const btns  = document.getElementById('rr-action-btns');
+  if (r.admin_status === 'sent') {
+    label.textContent = '✅ Report marked as sent!';
+    btns.innerHTML = '<span class="badge badge-green" style="font-size:12px;padding:6px 14px">✅ SENT</span>';
+  } else if (r.admin_status === 'approved') {
+    label.textContent = 'Report approved — copy email & send manually';
+    btns.innerHTML = `<button class="btn btn-green" onclick="markSent()">✓ Mark as Sent</button>`;
+  } else if (r.admin_status === 'pending_ai') {
+    label.textContent = '⏳ AI analysis in progress…';
+    btns.innerHTML = `<button class="btn btn-ghost" onclick="openReport('${r.id}')">↻ Refresh</button>`;
+  } else {
+    label.textContent = `Ready to approve ${r.clients?.company_name||'this'} report?`;
+    btns.innerHTML = `<button class="btn btn-primary" onclick="approveReport()">✓ Approve Report</button>`;
+  }
+}
+
+async function approveReport() {
+  try {
+    const data = await api('POST', `/reports/${CURRENT_REPORT.id}/approve`);
+    CURRENT_REPORT = data.report;
+    updateActionBar();
+    toast('Report approved!', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function markSent() {
+  try {
+    const subject = document.getElementById('rr-subject').value;
+    const data = await api('POST', `/reports/${CURRENT_REPORT.id}/mark-sent`, { emailSubject: subject });
+    CURRENT_REPORT = data.report;
+    updateActionBar();
+    toast('Marked as sent!', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function saveNotes() {
+  try {
+    const adminNotes = document.getElementById('rr-notes').value;
+    await api('PATCH', `/reports/${CURRENT_REPORT.id}/admin-notes`, { adminNotes });
+    toast('Notes saved!', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function regenerateEmail() {
+  try {
+    toast('Regenerating email…', 'info');
+    const data = await api('POST', `/reports/${CURRENT_REPORT.id}/regenerate-email`);
+    document.getElementById('rr-subject').value = data.draftEmail.subject || '';
+    document.getElementById('rr-body').value    = data.draftEmail.body    || '';
+    toast('Email regenerated!', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+document.getElementById('login-password').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>
