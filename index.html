@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEO Autopilot — Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#06080f;--surface:#0d1117;--surface2:#131a24;--surface3:#1a2332;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --indigo:#6366f1;--violet:#8b5cf6;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--cyan:#06b6d4;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#4a5568;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto',sans-serif;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px;}
+
+/* ── LAYOUT ── */
+.app{display:flex;min-height:100vh;}
+.sidebar{width:230px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;top:0;left:0;z-index:100;}
+.main{margin-left:230px;flex:1;padding:28px 32px;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.logo-wrap{padding:22px 18px 18px;border-bottom:1px solid var(--border);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--indigo),var(--violet));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 4px 12px rgba(99,102,241,.4);}
+.logo-name{font-weight:700;font-size:14px;}
+.logo-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+.nav{flex:1;padding:14px 8px;}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;margin-bottom:2px;width:100%;text-align:left;cursor:pointer;font-family:'Roboto',sans-serif;font-size:13px;font-weight:500;border:none;border-left:2px solid transparent;color:var(--text3);background:transparent;transition:all .15s;}
+.nav-btn.active{color:#fff;background:rgba(99,102,241,.18);border-left-color:var(--indigo);}
+.nav-btn:hover:not(.active){color:var(--text2);background:rgba(255,255,255,.04);}
+.nav-icon{width:18px;text-align:center;font-size:14px;}
+.new-report-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px;background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Roboto',sans-serif;margin:0 0 10px;}
+.sidebar-footer{padding:14px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.user-name{font-size:13px;font-weight:700;}
+.user-role{font-size:10px;color:var(--text3);margin-top:1px;}
+.logout-btn{background:rgba(255,255,255,.07);border:none;border-radius:7px;padding:6px 9px;cursor:pointer;color:var(--text3);font-size:13px;}
+.nav-pad{padding:0 8px 0;}
+
+/* ── PAGES ── */
+.page{display:none;}
+.page.active{display:block;animation:fadein .25s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── LOGIN ── */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse 90% 60% at 50% 0%,rgba(99,102,241,.25),transparent),radial-gradient(ellipse 60% 50% at 90% 90%,rgba(139,92,246,.2),transparent),var(--bg);}
+.login-card{background:var(--surface);border:1px solid var(--border2);border-radius:22px;padding:44px;width:400px;box-shadow:0 40px 80px rgba(0,0,0,.6);}
+.login-icon{width:56px;height:56px;background:linear-gradient(135deg,var(--indigo),var(--violet));border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:24px;box-shadow:0 8px 24px rgba(99,102,241,.4);}
+.login-title{font-weight:900;font-size:24px;text-align:center;}
+.login-sub{font-size:13px;color:var(--text2);text-align:center;margin-top:4px;}
+.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:15px;font-weight:700;font-family:'Roboto',sans-serif;box-shadow:0 8px 24px rgba(99,102,241,.35);margin-top:4px;}
+.demo-note{margin-top:18px;padding:10px 14px;background:rgba(99,102,241,.08);border-radius:8px;font-size:12px;color:var(--text3);text-align:center;}
+
+/* ── SHARED ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;}
+.card-sm{padding:16px;}
+.page-title{font-weight:900;font-size:22px;}
+.page-sub{font-size:13px;color:var(--text2);margin-top:3px;}
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;}
+.label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.04em;}
+.form-input{width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;font-family:'Roboto',sans-serif;outline:none;}
+.form-input:focus{border-color:var(--indigo);}
+.form-select{width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;font-family:'Roboto',sans-serif;outline:none;}
+.form-textarea{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;font-family:'Roboto',sans-serif;outline:none;resize:vertical;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{margin-bottom:14px;}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.03em;}
+.badge-indigo{background:rgba(99,102,241,.18);color:#a5b4fc;}
+.badge-green{background:rgba(16,185,129,.18);color:#34d399;}
+.badge-red{background:rgba(239,68,68,.18);color:#f87171;}
+.badge-amber{background:rgba(245,158,11,.18);color:#fbbf24;}
+.badge-cyan{background:rgba(6,182,212,.18);color:#67e8f9;}
+.badge-violet{background:rgba(139,92,246,.18);color:#c4b5fd;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:'Roboto',sans-serif;border:none;transition:opacity .15s;}
+.btn:hover{opacity:.88;}
+.btn-primary{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--text2);border:1px solid var(--border2) !important;}
+.btn-green{background:linear-gradient(135deg,var(--green),#059669);color:#fff;}
+.btn-sm{padding:6px 12px;font-size:11px;}
+.flex{display:flex;}
+.items-center{align-items:center;}
+.justify-between{justify-content:space-between;}
+.gap-8{gap:8px;}
+.gap-12{gap:12px;}
+.gap-16{gap:16px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.col-layout{display:grid;grid-template-columns:1fr 290px;gap:24px;}
+.mb-14{margin-bottom:14px;}
+.mb-18{margin-bottom:18px;}
+.mb-24{margin-bottom:24px;}
+.mb-28{margin-bottom:28px;}
+.mt-16{margin-top:16px;}
+.mt-18{margin-top:18px;}
+.hidden{display:none;}
+
+/* ── STATS ── */
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;}
+.stat-bar{position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-icon{position:absolute;top:16px;right:16px;font-size:20px;opacity:.35;}
+.stat-val{font-weight:900;font-size:28px;margin-bottom:4px;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.stat-label{font-size:11px;color:var(--text3);font-weight:500;}
+
+/* ── REPORT ROWS ── */
+.report-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:border-color .15s;}
+.report-row:hover{border-color:var(--border2);}
+.report-client{font-weight:700;font-size:14px;}
+.report-meta{font-size:11px;color:var(--text3);margin-top:3px;}
+.section-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.section-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+/* ── DEADLINE CARDS ── */
+.deadline-card{border-radius:10px;padding:9px 12px;margin-bottom:8px;}
+.deadline-overdue{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.25);}
+.deadline-soon{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25);}
+.deadline-upcoming{background:var(--surface2);border:1px solid var(--border);}
+
+/* ── SCORE RINGS ── */
+.score-ring{width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.score-inner{width:46px;height:46px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;}
+.score-label{font-size:10px;color:var(--text3);text-align:center;}
+
+/* ── ISSUE ITEMS ── */
+.issue{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:13px;}
+.issue-critical{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);}
+.issue-warning{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);}
+.issue-info{background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.2);}
+.issue-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+
+/* ── WIN / STEP BOXES ── */
+.win-box{background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(6,182,212,.04));border:1px solid rgba(16,185,129,.2);border-radius:13px;padding:18px;}
+.win-title{font-weight:700;font-size:13px;color:#34d399;margin-bottom:10px;}
+.win-item{font-size:13px;color:#6ee7b7;margin-bottom:5px;}
+.step-box{background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.04));border:1px solid rgba(99,102,241,.2);border-radius:13px;padding:18px;}
+.step-title{font-weight:700;font-size:13px;color:#a5b4fc;margin-bottom:10px;}
+.step-item{font-size:13px;color:#c4b5fd;margin-bottom:5px;}
+.summary-box{background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(99,102,241,.05));border:1px solid rgba(139,92,246,.2);border-radius:13px;padding:18px;margin-bottom:18px;}
+.summary-title{font-weight:700;font-size:13px;color:#c4b5fd;margin-bottom:8px;}
+.summary-text{font-size:13px;color:#a78bfa;line-height:1.65;}
+.info-note{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15);border-radius:8px;padding:9px 14px;font-size:12px;color:#a5b4fc;display:flex;align-items:center;gap:8px;}
+.action-bar{background:linear-gradient(135deg,#0d1117,#131a24);border:1px solid var(--border2);border-radius:13px;padding:22px;display:flex;justify-content:space-between;align-items:center;}
+
+/* ── CLIENT HEALTH BAR ── */
+.health-bars{display:flex;align-items:flex-end;gap:8px;height:65px;}
+.health-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.health-bar-fill{width:100%;background:linear-gradient(to top,var(--indigo),var(--violet));border-radius:3px 3px 0 0;}
+.health-bar-label{font-size:9px;color:var(--text3);}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══════════════════════════════════════════════════ -->
+<div id="login-screen" class="login-screen">
+  <div class="login-card">
+    <div class="login-icon">📈</div>
+    <div class="login-title">SEO Autopilot</div>
+    <div class="login-sub">Admin Dashboard — Sign In</div>
+    <div style="margin-top:28px;" class="form-group">
+      <label class="label">Email Address</label>
+      <input class="form-input" type="email" value="admin@company.com">
+    </div>
+    <div class="form-group">
+      <label class="label">Password</label>
+      <input class="form-input" type="password" value="password123">
+    </div>
+    <button class="login-btn" onclick="enterApp()">Sign In →</button>
+    <div class="demo-note">Demo credentials already filled in ↑</div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ════════════════════════════════════════════════ -->
+<div id="main-app" class="app" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo-wrap">
+      <div class="logo">
+        <div class="logo-icon">📈</div>
+        <div>
+          <div class="logo-name">SEO Autopilot</div>
+          <div class="logo-sub">AI-Powered Reports</div>
+        </div>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" onclick="nav('dashboard',this)"><span class="nav-icon">⬡</span>Dashboard</button>
+      <button class="nav-btn" onclick="nav('projects',this)"><span class="nav-icon">📁</span>Projects</button>
+      <button class="nav-btn" onclick="nav('clients',this)"><span class="nav-icon">👥</span>Clients</button>
+      <button class="nav-btn" onclick="nav('deadlines',this)"><span class="nav-icon">⏰</span>Deadlines</button>
+    </nav>
+    <div class="nav-pad">
+      <button class="new-report-btn" onclick="nav('new-report',null)">📄 New Report</button>
+    </div>
+    <div class="sidebar-footer">
+      <div>
+        <div class="user-name">Vivek Sharma</div>
+        <div class="user-role">Admin</div>
+      </div>
+      <button class="logout-btn" onclick="logout()">⎋</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div><div class="page-title">Admin Command Center</div><div class="page-sub">Wednesday, 11 March 2026</div></div>
+        <button class="btn btn-primary" onclick="nav('new-report',null)">+ New Report</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid-4 mb-28">
+        <div class="stat-card"><div class="stat-bar" style="background:linear-gradient(90deg,#6366f1,#8b5cf6)"></div><div class="stat-icon">📁</div><div class="stat-val" style="background-image:linear-gradient(135deg,#6366f1,#8b5cf6)">6</div><div class="stat-label">Total Projects</div></div>
+        <div class="stat-card"><div class="stat-bar" style="background:linear-gradient(90deg,#8b5cf6,#06b6d4)"></div><div class="stat-icon">👥</div><div class="stat-val" style="background-image:linear-gradient(135deg,#8b5cf6,#06b6d4)">5</div><div class="stat-label">Active Clients</div></div>
+        <div class="stat-card"><div class="stat-bar" style="background:linear-gradient(90deg,#10b981,#06b6d4)"></div><div class="stat-icon">✉️</div><div class="stat-val" style="background-image:linear-gradient(135deg,#10b981,#06b6d4)">1</div><div class="stat-label">Sent This Month</div></div>
+        <div class="stat-card"><div class="stat-bar" style="background:linear-gradient(90deg,#f59e0b,#10b981)"></div><div class="stat-icon">💚</div><div class="stat-val" style="background-image:linear-gradient(135deg,#f59e0b,#10b981)">72%</div><div class="stat-label">Avg Client Health</div></div>
+      </div>
+
+      <div class="col-layout">
+        <div>
+          <!-- Critical -->
+          <div class="section-head"><div class="section-dot" style="background:#ef4444;box-shadow:0 0 8px #ef4444"></div><span style="font-weight:700;font-size:12px;color:#f87171;letter-spacing:.04em">🚨 IMMEDIATE ATTENTION (2)</span></div>
+          <div class="report-row" onclick="openReport(0)">
+            <div><div class="flex items-center gap-8 mb-14" style="margin-bottom:3px"><span class="report-client">TechCorp India</span><span class="badge badge-violet">MONTHLY</span></div><div class="report-meta">March 2026 · TechCorp Monthly SEO</div></div>
+            <div class="flex items-center gap-8"><span class="badge badge-amber">62/100</span><span style="color:#ef4444;font-size:11px;font-weight:600">›</span></div>
+          </div>
+          <div class="report-row" onclick="openReport(2)">
+            <div><div class="flex items-center gap-8" style="margin-bottom:3px"><span class="report-client">StartupY Solutions</span><span class="badge badge-violet">MONTHLY</span></div><div class="report-meta">March 2026 · StartupY Growth SEO</div></div>
+            <div class="flex items-center gap-8"><span class="badge badge-red">38/100</span><span style="color:#ef4444;font-size:11px;font-weight:600">›</span></div>
+          </div>
+
+          <!-- Warning -->
+          <div class="section-head mt-18"><div class="section-dot" style="background:#f59e0b"></div><span style="font-weight:700;font-size:12px;color:#fbbf24;letter-spacing:.04em">⚠️ REVIEW NEEDED (1)</span></div>
+          <div class="report-row" onclick="openReport(3)">
+            <div><div class="flex items-center gap-8" style="margin-bottom:3px"><span class="report-client">FinanceZen</span><span class="badge badge-indigo">BIWEEKLY</span></div><div class="report-meta">1st Half March 2026 · FinanceZen Bi-Weekly</div></div>
+            <div class="flex items-center gap-8"><span class="badge badge-amber">73/100</span><span style="color:#f59e0b;font-size:11px">›</span></div>
+          </div>
+
+          <!-- Good -->
+          <div class="section-head mt-18"><div class="section-dot" style="background:#10b981;box-shadow:0 0 8px #10b981"></div><span style="font-weight:700;font-size:12px;color:#34d399;letter-spacing:.04em">✅ GOOD — PENDING REVIEW (1)</span></div>
+          <div class="report-row" onclick="openReport(1)">
+            <div><div class="flex items-center gap-8" style="margin-bottom:3px"><span class="report-client">RetailX Fashion</span><span class="badge badge-cyan">WEEKLY</span></div><div class="report-meta">Week 2 March 2026 · RetailX Weekly SEO</div></div>
+            <div class="flex items-center gap-8"><span class="badge badge-green">84/100</span><span style="color:#10b981;font-size:11px">›</span></div>
+          </div>
+
+          <!-- Approved -->
+          <div class="section-head mt-18"><div class="section-dot" style="background:#06b6d4"></div><span style="font-weight:700;font-size:12px;color:#67e8f9;letter-spacing:.04em">📬 APPROVED — READY TO SEND (1)</span></div>
+          <div class="report-row" onclick="openReport(4)">
+            <div><div class="flex items-center gap-8" style="margin-bottom:3px"><span class="report-client">EcomBoost</span><span class="badge badge-cyan">WEEKLY</span></div><div class="report-meta">Week 2 March 2026 · EcomBoost Weekly SEO</div></div>
+            <div class="flex items-center gap-8"><span class="badge badge-green">88/100</span><span class="badge badge-green">✓ APPROVED</span><span style="color:#10b981;font-size:11px">›</span></div>
+          </div>
+        </div>
+
+        <!-- Right sidebar -->
+        <div>
+          <div class="card card-sm mb-18" style="padding:16px;">
+            <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">⏰ Deadlines</div>
+            <div class="deadline-card deadline-overdue"><div style="font-weight:700;font-size:13px">StartupY Solutions</div><div style="font-size:10px;color:var(--text3);margin-top:2px">StartupY Growth SEO</div><div style="font-size:11px;font-weight:700;color:#ef4444;margin-top:5px">2 days overdue</div></div>
+            <div class="deadline-card deadline-soon"><div style="font-weight:700;font-size:13px">RetailX Fashion</div><div style="font-size:10px;color:var(--text3);margin-top:2px">RetailX Weekly SEO</div><div style="font-size:11px;font-weight:700;color:#f59e0b;margin-top:5px">Due Tomorrow!</div></div>
+            <div class="deadline-card deadline-soon"><div style="font-weight:700;font-size:13px">TechCorp India</div><div style="font-size:10px;color:var(--text3);margin-top:2px">TechCorp Blog SEO</div><div style="font-size:11px;font-weight:700;color:#f59e0b;margin-top:5px">3 days left</div></div>
+            <div class="deadline-card deadline-upcoming"><div style="font-weight:700;font-size:13px">EcomBoost</div><div style="font-size:10px;color:var(--text3);margin-top:2px">EcomBoost Weekly SEO</div><div style="font-size:11px;font-weight:700;color:#10b981;margin-top:5px">7 days left</div></div>
+          </div>
+          <div class="card" style="padding:16px;">
+            <div style="font-size:10px;font-weight:700;color:#f87171;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">⚠️ Churn Risk</div>
+            <div style="padding:10px 12px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:8px;cursor:pointer"><div style="font-weight:700;font-size:13px">StartupY Solutions</div><div style="font-size:11px;color:#ef4444;margin-top:4px">Health: 45% · No reply 60 days</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PROJECTS ══ -->
+    <div id="page-projects" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Projects</div><div class="page-sub">6 active projects</div></div>
+        <button class="btn btn-primary" onclick="toggle('proj-form')">+ Add Project</button>
+      </div>
+      <div id="proj-form" class="card mb-24 hidden">
+        <div style="font-weight:700;font-size:15px;margin-bottom:18px">New Project</div>
+        <div class="form-grid mb-18">
+          <div><label class="label">Project Name *</label><input class="form-input" placeholder="TechCorp SEO Campaign"></div>
+          <div><label class="label">Client *</label><select class="form-select"><option>EcomBoost</option><option>TechCorp India</option><option>RetailX Fashion</option><option>FinanceZen</option><option>StartupY Solutions</option></select></div>
+          <div><label class="label">Report Type *</label><select class="form-select"><option>Monthly</option><option>Weekly</option><option>Biweekly (15 days)</option></select></div>
+          <div><label class="label">Assigned To</label><input class="form-input" value="seo@company.com"></div>
+          <div><label class="label">Google Doc Link</label><input class="form-input" placeholder="https://docs.google.com/document/d/..."></div>
+          <div><label class="label">Google Sheet Link</label><input class="form-input" placeholder="https://docs.google.com/spreadsheets/d/..."></div>
+        </div>
+        <div class="flex gap-8"><button class="btn btn-primary btn-sm">Create Project</button><button class="btn btn-ghost btn-sm" onclick="toggle('proj-form')">Cancel</button></div>
+      </div>
+      <div style="display:grid;gap:11px">
+        <div class="card" style="padding:15px 20px"><div class="flex justify-between items-center"><div class="flex items-center gap-12"><div style="width:40px;height:40px;background:rgba(99,102,241,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">📁</div><div><div style="font-weight:700;font-size:14px">TechCorp Monthly SEO</div><div style="font-size:11px;color:var(--text3);margin-top:2px">TechCorp India · monthly</div></div></div><div class="flex gap-8"><span class="badge badge-violet">MONTHLY</span><span class="badge badge-green">📊 SHEET</span><span class="badge badge-amber">EDITOR</span></div></div><div style="margin-top:8px;font-size:11px;color:var(--text3)">Next: <strong style="color:var(--text2)">5 Apr 2026</strong> · Assigned: <strong style="color:var(--text2)">seo@company.com</strong></div></div>
+        <div class="card" style="padding:15px 20px"><div class="flex justify-between items-center"><div class="flex items-center gap-12"><div style="width:40px;height:40px;background:rgba(6,182,212,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">📁</div><div><div style="font-weight:700;font-size:14px">RetailX Weekly SEO</div><div style="font-size:11px;color:var(--text3);margin-top:2px">RetailX Fashion · weekly</div></div></div><div class="flex gap-8"><span class="badge badge-cyan">WEEKLY</span><span class="badge badge-cyan">📄 DOC</span></div></div><div style="margin-top:8px;font-size:11px;color:var(--text3)">Next: <strong style="color:var(--text2)">12 Mar 2026</strong> · Assigned: <strong style="color:var(--text2)">seo@company.com</strong></div></div>
+        <div class="card" style="padding:15px 20px;background:rgba(239,68,68,.03);border-color:rgba(239,68,68,.2)"><div class="flex justify-between items-center"><div class="flex items-center gap-12"><div style="width:40px;height:40px;background:rgba(239,68,68,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">📁</div><div><div style="font-weight:700;font-size:14px">StartupY Growth SEO</div><div style="font-size:11px;color:var(--text3);margin-top:2px">StartupY Solutions · monthly</div></div></div><div class="flex gap-8"><span class="badge badge-violet">MONTHLY</span><span class="badge badge-green">📊 SHEET</span></div></div><div style="margin-top:8px;font-size:11px;color:#ef4444">⚠️ OVERDUE — Due: 9 Mar 2026</div></div>
+        <div class="card" style="padding:15px 20px"><div class="flex justify-between items-center"><div class="flex items-center gap-12"><div style="width:40px;height:40px;background:rgba(99,102,241,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">📁</div><div><div style="font-weight:700;font-size:14px">FinanceZen Bi-Weekly</div><div style="font-size:11px;color:var(--text3);margin-top:2px">FinanceZen · biweekly</div></div></div><div class="flex gap-8"><span class="badge badge-indigo">BIWEEKLY</span><span class="badge badge-green">📊 SHEET</span><span class="badge badge-amber">EDITOR</span></div></div><div style="margin-top:8px;font-size:11px;color:var(--text3)">Next: <strong style="color:var(--text2)">26 Mar 2026</strong> · Assigned: <strong style="color:var(--text2)">seo@company.com</strong></div></div>
+        <div class="card" style="padding:15px 20px"><div class="flex justify-between items-center"><div class="flex items-center gap-12"><div style="width:40px;height:40px;background:rgba(99,102,241,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">📁</div><div><div style="font-weight:700;font-size:14px">EcomBoost Weekly SEO</div><div style="font-size:11px;color:var(--text3);margin-top:2px">EcomBoost · weekly</div></div></div><div class="flex gap-8"><span class="badge badge-cyan">WEEKLY</span><span class="badge badge-green">📊 SHEET</span><span class="badge badge-amber">EDITOR</span></div></div><div style="margin-top:8px;font-size:11px;color:var(--text3)">Next: <strong style="color:var(--text2)">18 Mar 2026</strong> · Assigned: <strong style="color:var(--text2)">seo@company.com</strong></div></div>
+        <div class="card" style="padding:15px 20px"><div class="flex justify-between items-center"><div class="flex items-center gap-12"><div style="width:40px;height:40px;background:rgba(99,102,241,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">📁</div><div><div style="font-weight:700;font-size:14px">TechCorp Blog SEO</div><div style="font-size:11px;color:var(--text3);margin-top:2px">TechCorp India · weekly</div></div></div><div class="flex gap-8"><span class="badge badge-cyan">WEEKLY</span><span class="badge badge-cyan">📄 DOC</span></div></div><div style="margin-top:8px;font-size:11px;color:var(--text3)">Next: <strong style="color:var(--text2)">14 Mar 2026</strong> · Assigned: <strong style="color:var(--text2)">seo@company.com</strong></div></div>
+      </div>
+    </div>
+
+    <!-- ══ CLIENTS ══ -->
+    <div id="page-clients" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Clients</div><div class="page-sub">5 active clients</div></div>
+        <button class="btn btn-primary" onclick="toggle('client-form')">+ Add Client</button>
+      </div>
+      <div id="client-form" class="card mb-24 hidden">
+        <div style="font-weight:700;font-size:15px;margin-bottom:18px">New Client</div>
+        <div class="form-grid mb-18">
+          <div><label class="label">Contact Name *</label><input class="form-input" placeholder="Rahul Sharma"></div>
+          <div><label class="label">Company Name *</label><input class="form-input" placeholder="TechCorp India"></div>
+          <div><label class="label">Email *</label><input class="form-input" placeholder="rahul@techcorp.in"></div>
+          <div><label class="label">Phone</label><input class="form-input" placeholder="+91 98765 43210"></div>
+          <div><label class="label">WhatsApp Number</label><input class="form-input" placeholder="919876543210"></div>
+          <div><label class="label">Industry</label><input class="form-input" placeholder="E-commerce"></div>
+          <div><label class="label">Google Doc Link</label><input class="form-input" placeholder="https://docs.google.com/document/d/..."></div>
+          <div><label class="label">Google Sheet Link</label><input class="form-input" placeholder="https://docs.google.com/spreadsheets/d/..."></div>
+          <div><label class="label">Data Source</label><select class="form-select"><option>Google Sheet</option><option>Google Doc</option><option>Manual</option></select></div>
+          <div><label class="label">Report Frequency</label><select class="form-select"><option>Monthly</option><option>Weekly</option><option>Biweekly (15 days)</option></select></div>
+          <div><label class="label">Email Tone</label><select class="form-select"><option>Friendly</option><option>Formal</option><option>Brief</option></select></div>
+        </div>
+        <div class="flex gap-8"><button class="btn btn-primary btn-sm">Add Client</button><button class="btn btn-ghost btn-sm" onclick="toggle('client-form')">Cancel</button></div>
+      </div>
+      <div style="display:grid;gap:10px">
+        <div class="card" style="padding:13px 20px;cursor:pointer" onclick="openClient(0)"><div class="flex justify-between items-center"><div class="flex items-center gap-12"><div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px">E</div><div><div style="font-weight:700;font-size:14px">EcomBoost</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Karan Malhotra · karan@ecomboost.in</div></div></div><div class="flex items-center gap-12"><div style="text-align:right"><div style="font-weight:900;font-size:22px;color:#10b981">95%</div><div style="font-size:10px;color:var(--text3)">Health</div></div><span class="badge badge-green">🟢 LOW</span><span style="color:var(--text3)">›</span></div></div></div>
+        <div class="card" style="padding:13px 20px;cursor:pointer" onclick="openClient(1)"><div class="flex justify-between items-center"><div class="flex items-center gap-12"><div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px">T</div><div><div style="font-weight:700;font-size:14px">TechCorp India</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Amit Gupta · amit@techcorp.in</div></div></div><div class="flex items-center gap-12"><div style="text-align:right"><div style="font-weight:900;font-size:22px;color:#10b981">88%</div><div style="font-size:10px;color:var(--text3)">Health</div></div><span class="badge badge-green">🟢 LOW</span><span style="color:var(--text3)">›</span></div></div></div>
+        <div class="card" style="padding:13px 20px;cursor:pointer" onclick="openClient(2)"><div class="flex justify-between items-center"><div class="flex items-center gap-12"><div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px">R</div><div><div style="font-weight:700;font-size:14px">RetailX Fashion</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Priya Mehta · priya@retailx.com</div></div></div><div class="flex items-center gap-12"><div style="text-align:right"><div style="font-weight:900;font-size:22px;color:#10b981">72%</div><div style="font-size:10px;color:var(--text3)">Health</div></div><span class="badge badge-green">🟢 LOW</span><span style="color:var(--text3)">›</span></div></div></div>
+        <div class="card" style="padding:13px 20px;cursor:pointer" onclick="openClient(3)"><div class="flex justify-between items-center"><div class="flex items-center gap-12"><div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px">F</div><div><div style="font-weight:700;font-size:14px">FinanceZen</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Neha Joshi · neha@financezen.com</div></div></div><div class="flex items-center gap-12"><div style="text-align:right"><div style="font-weight:900;font-size:22px;color:#f59e0b">61%</div><div style="font-size:10px;color:var(--text3)">Health</div></div><span class="badge badge-amber">🟡 MEDIUM</span><span style="color:var(--text3)">›</span></div></div></div>
+        <div class="card" style="padding:13px 20px;cursor:pointer" onclick="openClient(4)"><div class="flex justify-between items-center"><div class="flex items-center gap-12"><div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#ef4444,#dc2626);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px">S</div><div><div style="font-weight:700;font-size:14px">StartupY Solutions</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Suresh Patel · suresh@startupy.io</div></div></div><div class="flex items-center gap-12"><div style="text-align:right"><div style="font-weight:900;font-size:22px;color:#ef4444">45%</div><div style="font-size:10px;color:var(--text3)">Health</div></div><span class="badge badge-red">🔴 HIGH</span><span style="color:var(--text3)">›</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- ══ CLIENT DETAIL ══ -->
+    <div id="page-client-detail" class="page">
+      <div class="flex items-center gap-16 mb-28">
+        <button class="btn btn-ghost btn-sm" onclick="nav('clients',null)">‹ Clients</button>
+        <div id="cd-title" class="page-title"></div>
+      </div>
+      <div class="grid-2 mb-18">
+        <div class="card"><div style="font-weight:700;font-size:14px;margin-bottom:16px">Client Health</div><div class="flex justify-between items-center" style="text-align:center"><div><div id="cd-score" style="font-weight:900;font-size:52px;line-height:1"></div><div style="font-size:11px;color:var(--text3);margin-top:4px">Health Score</div></div><div><div id="cd-risk" style="font-weight:800;font-size:18px;margin-top:8px"></div><div style="font-size:11px;color:var(--text3);margin-top:4px">Churn Risk</div></div></div></div>
+        <div class="card"><div style="font-weight:700;font-size:14px;margin-bottom:14px">📈 Score Trend</div><div class="health-bars" id="cd-bars"></div></div>
+      </div>
+      <div class="card">
+        <div style="font-weight:700;font-size:14px;margin-bottom:14px">Contact Info</div>
+        <div id="cd-info"></div>
+      </div>
+    </div>
+
+    <!-- ══ DEADLINES ══ -->
+    <div id="page-deadlines" class="page">
+      <div class="mb-28"><div class="page-title">Deadline Tracker</div><div class="page-sub">All upcoming report deadlines</div></div>
+      <div style="display:grid;gap:11px">
+        <div class="card" style="padding:15px 20px;background:rgba(239,68,68,.04);border-color:rgba(239,68,68,.25);display:flex;justify-content:space-between;align-items:center"><div class="flex items-center gap-16"><div style="width:40px;height:40px;border-radius:10px;background:rgba(239,68,68,.12);display:flex;align-items:center;justify-content:center;font-size:18px">🚨</div><div><div style="font-weight:700;font-size:14px">StartupY Solutions</div><div style="font-size:11px;color:var(--text3);margin-top:2px">StartupY Growth SEO · March 2026</div></div></div><div style="text-align:right"><div style="font-size:13px;font-weight:700;color:#ef4444">2 days overdue</div><div style="font-size:11px;color:var(--text3);margin-top:2px">9 Mar 2026</div><div style="margin-top:6px"><span class="badge badge-red">OVERDUE</span></div></div></div>
+        <div class="card" style="padding:15px 20px;background:rgba(245,158,11,.04);border-color:rgba(245,158,11,.25);display:flex;justify-content:space-between;align-items:center"><div class="flex items-center gap-16"><div style="width:40px;height:40px;border-radius:10px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;font-size:18px">⏰</div><div><div style="font-weight:700;font-size:14px">RetailX Fashion</div><div style="font-size:11px;color:var(--text3);margin-top:2px">RetailX Weekly SEO · Week 3 March 2026</div></div></div><div style="text-align:right"><div style="font-size:13px;font-weight:700;color:#f59e0b">Due Tomorrow!</div><div style="font-size:11px;color:var(--text3);margin-top:2px">12 Mar 2026</div><div style="margin-top:6px"><span class="badge badge-amber">DUE SOON</span></div></div></div>
+        <div class="card" style="padding:15px 20px;background:rgba(245,158,11,.04);border-color:rgba(245,158,11,.25);display:flex;justify-content:space-between;align-items:center"><div class="flex items-center gap-16"><div style="width:40px;height:40px;border-radius:10px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;font-size:18px">⏰</div><div><div style="font-weight:700;font-size:14px">TechCorp India</div><div style="font-size:11px;color:var(--text3);margin-top:2px">TechCorp Blog SEO · Week 3 March 2026</div></div></div><div style="text-align:right"><div style="font-size:13px;font-weight:700;color:#f59e0b">3 days left</div><div style="font-size:11px;color:var(--text3);margin-top:2px">14 Mar 2026</div><div style="margin-top:6px"><span class="badge badge-amber">DUE SOON</span></div></div></div>
+        <div class="card" style="padding:15px 20px;display:flex;justify-content:space-between;align-items:center"><div class="flex items-center gap-16"><div style="width:40px;height:40px;border-radius:10px;background:rgba(16,185,129,.1);display:flex;align-items:center;justify-content:center;font-size:18px">✅</div><div><div style="font-weight:700;font-size:14px">EcomBoost</div><div style="font-size:11px;color:var(--text3);margin-top:2px">EcomBoost Weekly SEO · Week 3 March 2026</div></div></div><div style="text-align:right"><div style="font-size:13px;font-weight:700;color:#10b981">7 days left</div><div style="font-size:11px;color:var(--text3);margin-top:2px">18 Mar 2026</div><div style="margin-top:6px"><span class="badge badge-green">UPCOMING</span></div></div></div>
+        <div class="card" style="padding:15px 20px;display:flex;justify-content:space-between;align-items:center"><div class="flex items-center gap-16"><div style="width:40px;height:40px;border-radius:10px;background:rgba(16,185,129,.1);display:flex;align-items:center;justify-content:center;font-size:18px">✅</div><div><div style="font-weight:700;font-size:14px">FinanceZen</div><div style="font-size:11px;color:var(--text3);margin-top:2px">FinanceZen Bi-Weekly · 2nd Half March</div></div></div><div style="text-align:right"><div style="font-size:13px;font-weight:700;color:#10b981">15 days left</div><div style="font-size:11px;color:var(--text3);margin-top:2px">26 Mar 2026</div><div style="margin-top:6px"><span class="badge badge-green">UPCOMING</span></div></div></div>
+        <div class="card" style="padding:15px 20px;display:flex;justify-content:space-between;align-items:center"><div class="flex items-center gap-16"><div style="width:40px;height:40px;border-radius:10px;background:rgba(16,185,129,.1);display:flex;align-items:center;justify-content:center;font-size:18px">✅</div><div><div style="font-weight:700;font-size:14px">TechCorp India</div><div style="font-size:11px;color:var(--text3);margin-top:2px">TechCorp Monthly SEO · April 2026</div></div></div><div style="text-align:right"><div style="font-size:13px;font-weight:700;color:#10b981">25 days left</div><div style="font-size:11px;color:var(--text3);margin-top:2px">5 Apr 2026</div><div style="margin-top:6px"><span class="badge badge-green">UPCOMING</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- ══ NEW REPORT ══ -->
+    <div id="page-new-report" class="page">
+      <div class="flex items-center gap-16 mb-28">
+        <button class="btn btn-ghost btn-sm" onclick="nav('dashboard',null)">‹ Back</button>
+        <div><div class="page-title">New Report</div><div class="page-sub">Submit a report for AI analysis</div></div>
+      </div>
+      <div style="max-width:660px">
+        <div class="card mb-18">
+          <div style="font-weight:700;font-size:14px;margin-bottom:18px">Report Details</div>
+          <div class="form-group"><label class="label">Select Project *</label><select class="form-select"><option>— Choose project —</option><option>TechCorp India — TechCorp Monthly SEO (monthly)</option><option>RetailX Fashion — RetailX Weekly SEO (weekly)</option><option>StartupY Solutions — StartupY Growth SEO (monthly)</option><option>FinanceZen — FinanceZen Bi-Weekly (biweekly)</option><option>EcomBoost — EcomBoost Weekly SEO (weekly)</option><option>TechCorp India — TechCorp Blog SEO (weekly)</option></select></div>
+          <div class="form-group"><label class="label">Report Period *</label><input class="form-input" value="March 2026" placeholder="e.g. March 2026 or Week 1 March 2026"></div>
+          <div style="background:var(--surface2);border-radius:9px;padding:13px;border:1px solid var(--border);font-size:13px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;font-weight:600;color:var(--text2)"><span style="color:#6366f1">📊</span>Auto Data Fetch</div><div style="font-size:12px;color:var(--text3)">Data will be automatically pulled from this client's linked Google Sheet or Doc. Paste below only to override.</div></div>
+        </div>
+        <div class="card mb-22">
+          <div style="font-weight:700;font-size:14px;margin-bottom:5px">📄 Manual Override <span style="font-size:11px;color:var(--text3);font-weight:400">(Optional)</span></div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Leave blank to use Google data automatically.</div>
+          <textarea class="form-textarea" style="min-height:140px;font-family:'Roboto Mono',monospace;font-size:12px" placeholder="Paste report content here (optional)...&#10;&#10;Organic Traffic: 12,450 (+23%)&#10;Top Keyword: 'digital marketing' - Rank 4&#10;..."></textarea>
+        </div>
+        <button onclick="nav('report-review',null)" style="width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:15px;font-weight:700;font-family:'Roboto',sans-serif;box-shadow:0 8px 24px rgba(99,102,241,.3)">Submit for AI Analysis →</button>
+      </div>
+    </div>
+
+    <!-- ══ REPORT REVIEW ══ -->
+    <div id="page-report-review" class="page">
+      <div class="flex items-center gap-16 mb-28" style="flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="nav('dashboard',null)">‹ Back</button>
+        <div style="flex:1"><div id="rr-title" class="page-title" style="font-size:20px"></div><div id="rr-sub" style="font-size:11px;color:var(--text2);margin-top:3px"></div></div>
+        <span id="rr-status-badge" class="badge badge-indigo"></span>
+      </div>
+      <!-- Score rings -->
+      <div class="card mb-18">
+        <div style="font-weight:700;font-size:14px;margin-bottom:18px">🤖 AI Analysis Results</div>
+        <div class="grid-4"><div id="ring-0"></div><div id="ring-1"></div><div id="ring-2"></div><div id="ring-3"></div></div>
+      </div>
+      <!-- Issues -->
+      <div class="card mb-18" id="rr-issues-card"><div style="font-weight:700;font-size:14px;margin-bottom:14px">⚠️ Issues Found</div><div id="rr-issues"></div></div>
+      <!-- Wins & Steps -->
+      <div class="grid-2 mb-18">
+        <div class="win-box"><div class="win-title">🏆 Key Wins</div><div id="rr-wins"></div></div>
+        <div class="step-box"><div class="step-title">📌 Next Steps</div><div id="rr-steps"></div></div>
+      </div>
+      <!-- Summary -->
+      <div class="summary-box"><div class="summary-title">📄 Executive Summary <span style="font-size:10px;color:var(--text3);font-weight:400">(for client email)</span></div><div id="rr-summary" class="summary-text"></div></div>
+      <!-- Email draft -->
+      <div class="card mb-18">
+        <div class="flex justify-between items-center mb-18">
+          <div style="font-weight:700;font-size:14px">📧 AI-Drafted Email</div>
+          <div class="flex gap-8 items-center">
+            <span style="font-size:11px;color:#10b981;background:rgba(16,185,129,.1);padding:3px 10px;border-radius:20px;font-weight:600">✓ AI Generated</span>
+            <button class="btn btn-ghost btn-sm">↻ Regenerate</button>
+          </div>
+        </div>
+        <div class="form-group"><label class="label">Subject Line</label><input class="form-input" id="rr-subject"></div>
+        <div class="form-group">
+          <label class="label">Email Body <span style="color:var(--text3);font-weight:400">(copy & send manually from your email client)</span></label>
+          <textarea class="form-textarea" id="rr-body" style="min-height:155px"></textarea>
+        </div>
+        <div class="info-note">ℹ️ Copy this email → send manually from Gmail → click "Mark as Sent" below</div>
+      </div>
+      <!-- Notes -->
+      <div class="card mb-18">
+        <label class="label">📝 Admin Notes <span style="color:var(--text3);font-weight:400;font-size:11px">(Internal only)</span></label>
+        <textarea class="form-textarea" style="min-height:75px;margin-top:8px" placeholder="Add internal notes for your team..."></textarea>
+      </div>
+      <!-- Action bar -->
+      <div class="action-bar">
+        <div>
+          <div id="rr-action-label" style="font-weight:700;font-size:15px"></div>
+          <div id="rr-action-email" style="font-size:11px;color:var(--text3);margin-top:4px"></div>
+        </div>
+        <div class="flex gap-12" id="rr-action-btns"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+const CLIENTS = [
+  {name:"Karan Malhotra",company:"EcomBoost",email:"karan@ecomboost.in",phone:"+91 54321 09876",whatsapp:"915432109876",industry:"E-commerce",health:95,risk:"low",tone:"Brief",source:"sheet",freq:"weekly",lastReply:"5 days ago"},
+  {name:"Amit Gupta",company:"TechCorp India",email:"amit@techcorp.in",phone:"+91 98765 43210",whatsapp:"919876543210",industry:"IT Services",health:88,risk:"low",tone:"Friendly",source:"sheet",freq:"monthly",lastReply:"5 days ago"},
+  {name:"Priya Mehta",company:"RetailX Fashion",email:"priya@retailx.com",phone:"+91 87654 32109",whatsapp:"918765432109",industry:"E-commerce",health:72,risk:"low",tone:"Formal",source:"doc",freq:"weekly",lastReply:"10 days ago"},
+  {name:"Neha Joshi",company:"FinanceZen",email:"neha@financezen.com",phone:"+91 65432 10987",whatsapp:"916543210987",industry:"Fintech",health:61,risk:"medium",tone:"Formal",source:"sheet",freq:"biweekly",lastReply:"30 days ago"},
+  {name:"Suresh Patel",company:"StartupY Solutions",email:"suresh@startupy.io",phone:"+91 76543 21098",whatsapp:"917654321098",industry:"SaaS",health:45,risk:"high",tone:"Friendly",source:"sheet",freq:"monthly",lastReply:"60 days ago"},
+];
+
+const REPORTS = [
+  {client:"TechCorp India",email:"amit@techcorp.in",project:"TechCorp Monthly SEO",period:"March 2026",freq:"monthly",score:62,status:"pending_review",severity:"critical",issues:[{s:"critical",m:"Mobile page speed dropped to 43 — major SEO impact expected"},{s:"warning",m:"3 pages returning 404 errors — crawl budget wasted"},{s:"info",m:"Keyword 'software development' stagnant at rank 11"}],wins:["Traffic up 23% month-over-month","Main keyword moved to Page 1, rank 4","89 organic leads generated"],steps:["Fix mobile page speed urgently","Redirect broken 404 pages","Target 3 new long-tail keywords"],summary:"Great news — TechCorp's website reached 12,450 visitors this March, a 23% jump! Your main keyword is now on Page 1. We're fixing a technical issue with mobile speed which will be resolved next month.",subject:"TechCorp India — March 2026 SEO Report 🚀",body:"Hi Amit,\n\nExciting news from your March SEO report! Your website reached 12,450 visitors — a 23% increase from February.\n\nBig win: Your keyword 'digital marketing services' jumped to Page 1, rank 4.\n\nWe're addressing a mobile speed issue — expect it fully resolved by April.\n\nWarm regards,\nYour SEO Team"},
+  {client:"RetailX Fashion",email:"priya@retailx.com",project:"RetailX Weekly SEO",period:"Week 2 March 2026",freq:"weekly",score:84,status:"pending_review",severity:"good",issues:[{s:"info",m:"Conversion rate 2.8% — slightly below 3% target"}],wins:["Traffic up 12% week-over-week","Summer Collection getting 45% more impressions","6 keywords moved up in rankings"],steps:["Optimize landing page for conversion","Push Summer Collection backlinks","A/B test CTA buttons"],summary:"Strong week for RetailX! 2,340 visitors — 12% more than last week. Your Summer Collection is gaining serious traction in search results.",subject:"RetailX Fashion — Week 2 March 2026 SEO Update",body:"Hi Priya,\n\nAnother solid week! RetailX Fashion received 2,340 visitors — up 12% from last week.\n\nYour Summer Collection is performing exceptionally well, gaining 45% more visibility in search.\n\nFocus for next week: optimizing your landing page to push conversion above 3%.\n\nBest regards,\nYour SEO Team"},
+  {client:"StartupY Solutions",email:"suresh@startupy.io",project:"StartupY Growth SEO",period:"March 2026",freq:"monthly",score:38,status:"pending_review",severity:"critical",issues:[{s:"critical",m:"Traffic declined 8% — investigate cause immediately"},{s:"critical",m:"Only 3 backlinks built vs 20 target"},{s:"warning",m:"Leads at 12 vs 50 target — goals not met"}],wins:["Maintained 234 keyword rankings"],steps:["Audit site for technical issues","Launch backlink outreach campaign","Create lead magnet content"],summary:"We're working hard on StartupY's SEO. Traffic dipped slightly and we're actively investigating. Recovery plan ready for April.",subject:"StartupY Solutions — March 2026 SEO Report",body:"Hi Suresh,\n\nThank you for your continued trust. I wanted to personally update you on March's SEO progress.\n\nThis month saw some fluctuations — we're actively investigating and have identified the key issues. Our recovery plan for April is already in place.\n\nI'd love to schedule a quick call to walk you through our action plan.\n\nBest regards,\nYour SEO Team"},
+  {client:"FinanceZen",email:"neha@financezen.com",project:"FinanceZen Bi-Weekly",period:"1st Half March 2026",freq:"biweekly",score:73,status:"pending_review",severity:"warning",issues:[{s:"warning",m:"Domain Authority at 41 — 4 points below target of 45"},{s:"info",m:"Traffic growth at 5% — steady but below target pace"}],wins:["28 high-quality backlinks built","4 blog posts published","'Personal finance tips' now at rank 6"],steps:["Focus on DA-building via guest posts","Accelerate content production","Target featured snippets"],summary:"Good first half of March for FinanceZen! 9,800 visitors and 28 quality backlinks built. Domain Authority climbing towards target.",subject:"FinanceZen — 1st Half March 2026 SEO Update",body:"Hi Neha,\n\nHere's your first-half March SEO update!\n\n28 high-quality backlinks were built this fortnight — great momentum for domain authority. Your 'personal finance tips' keyword is now at rank 6.\n\nWe'll push hard in the second half to accelerate traffic growth.\n\nRegards,\nYour SEO Team"},
+  {client:"EcomBoost",email:"karan@ecomboost.in",project:"EcomBoost Weekly SEO",period:"Week 2 March 2026",freq:"weekly",score:88,status:"approved",severity:"good",issues:[],wins:["19,200 product visitors — 4% week growth","Add to Cart almost at 8% target","5 new keywords in Top 10"],steps:["Close 0.2% Add-to-Cart gap","Expand Electronics keyword set"],summary:"Another great week! 19,200 visitors and Add to Cart rate almost at target.",subject:"EcomBoost — Week 2 March 2026 SEO Update ✅",body:"Hi Karan,\n\nWeek 2 numbers are in — 19,200 product page visitors, up 4% from last week!\n\nYour Add to Cart rate hit 7.8% — just 0.2% away from our 8% target. Making a small tweak to button placement that should close that gap next week.\n\nExcellent momentum!\n\nYour SEO Team"},
+];
+
+// ── STATE ─────────────────────────────────────────────────────
+let currentReport = null;
+let reportApproved = false;
+let reportSent = false;
+
+// ── NAVIGATION ────────────────────────────────────────────────
+function enterApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('main-app').style.display='flex';
+}
+function logout(){
+  document.getElementById('main-app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+function nav(pageId, btnEl){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg = document.getElementById('page-'+pageId);
+  if(pg) pg.classList.add('active');
+  if(btnEl){
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    btnEl.classList.add('active');
+  }
+}
+function toggle(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('hidden');
+}
+
+// ── REPORT REVIEW ─────────────────────────────────────────────
+function openReport(idx){
+  currentReport = REPORTS[idx];
+  reportApproved = currentReport.status === 'approved';
+  reportSent = false;
+  const r = currentReport;
+
+  document.getElementById('rr-title').textContent = r.client + ' — ' + r.period;
+  document.getElementById('rr-sub').textContent = r.project + ' · ' + r.freq + ' report';
+
+  const sb = document.getElementById('rr-status-badge');
+  sb.textContent = reportSent ? '✅ SENT' : reportApproved ? '✓ APPROVED' : 'PENDING REVIEW';
+  sb.className = 'badge ' + (reportSent ? 'badge-green' : reportApproved ? 'badge-cyan' : 'badge-indigo');
+
+  // Score rings
+  const scores = [r.score, Math.min(100,Math.round(r.score*1.25)), Math.min(100,Math.round(r.score*1.35)), Math.min(100,Math.round(r.score*.9))];
+  const labels = ['Overall Score','Content Quality','Data Accuracy','Goals Match'];
+  scores.forEach((sc,i)=>{
+    const color = sc>=75?'#10b981':sc>=55?'#f59e0b':'#ef4444';
+    const deg = (sc/100)*360;
+    document.getElementById('ring-'+i).innerHTML = `
+      <div style="text-align:center">
+        <div class="score-ring" style="background:conic-gradient(${color} ${deg}deg,rgba(255,255,255,.08) 0)">
+          <div class="score-inner" style="color:${color}">${sc}</div>
+        </div>
+        <div class="score-label">${labels[i]}</div>
+      </div>`;
+  });
+
+  // Issues
+  const issEl = document.getElementById('rr-issues');
+  const issCard = document.getElementById('rr-issues-card');
+  if(r.issues.length===0){ issCard.style.display='none'; } else {
+    issCard.style.display='block';
+    issEl.innerHTML = r.issues.map(iss=>`
+      <div class="issue issue-${iss.s}">
+        <span class="issue-icon" style="color:${iss.s==='critical'?'#ef4444':iss.s==='warning'?'#f59e0b':'#6366f1'}">${iss.s==='info'?'ℹ':'⚠'}</span>
+        <span>${iss.m}</span>
+      </div>`).join('');
+  }
+
+  document.getElementById('rr-wins').innerHTML = r.wins.map(w=>`<div class="win-item">• ${w}</div>`).join('');
+  document.getElementById('rr-steps').innerHTML = r.steps.map(s=>`<div class="step-item">• ${s}</div>`).join('');
+  document.getElementById('rr-summary').textContent = r.summary;
+  document.getElementById('rr-subject').value = r.subject;
+  document.getElementById('rr-body').value = r.body;
+  document.getElementById('rr-action-email').textContent = 'To: ' + r.email;
+
+  updateActionBar();
+  nav('report-review', null);
+}
+
+function updateActionBar(){
+  const r = currentReport;
+  const label = document.getElementById('rr-action-label');
+  const btns  = document.getElementById('rr-action-btns');
+  const sb    = document.getElementById('rr-status-badge');
+
+  if(reportSent){
+    label.textContent = '✅ Marked as sent!';
+    btns.innerHTML = '<span class="badge badge-green" style="font-size:12px;padding:6px 14px">✅ SENT</span>';
+    sb.textContent='✅ SENT'; sb.className='badge badge-green';
+  } else if(reportApproved){
+    label.textContent = 'Report approved — copy email & send manually';
+    btns.innerHTML = '<button class="btn btn-green" onclick="markSent()">✓ Mark as Sent</button>';
+    sb.textContent='✓ APPROVED'; sb.className='badge badge-cyan';
+  } else {
+    label.textContent = "Ready to approve " + r.client + "'s report?";
+    btns.innerHTML = '<button class="btn btn-primary" onclick="approveReport()">✓ Approve Report</button>';
+    sb.textContent='PENDING REVIEW'; sb.className='badge badge-indigo';
+  }
+}
+function approveReport(){ reportApproved=true; updateActionBar(); }
+function markSent(){ reportSent=true; updateActionBar(); }
+
+// ── CLIENT DETAIL ─────────────────────────────────────────────
+function openClient(idx){
+  const c = CLIENTS[idx];
+  document.getElementById('cd-title').textContent = c.company;
+  const hc = c.health>=80?'#10b981':c.health>=60?'#f59e0b':'#ef4444';
+  document.getElementById('cd-score').style.color = hc;
+  document.getElementById('cd-score').textContent = c.health;
+  document.getElementById('cd-risk').textContent = c.risk==='low'?'🟢 LOW':c.risk==='medium'?'🟡 MEDIUM':'🔴 HIGH';
+
+  const bars=[Math.round(c.health*.55),Math.round(c.health*.65),Math.round(c.health*.8),c.health];
+  document.getElementById('cd-bars').innerHTML = bars.map((h,i)=>`
+    <div class="health-bar">
+      <div class="health-bar-fill" style="height:${Math.round(h*.65)}px;opacity:${i===bars.length-1?1:.5}"></div>
+      <div class="health-bar-label">W${i+1}</div>
+    </div>`).join('');
+
+  document.getElementById('cd-info').innerHTML = [
+    ['Contact',c.name],['Email',c.email],['Phone',c.phone],['WhatsApp',c.whatsapp],
+    ['Industry',c.industry],['Report Frequency',c.freq],
+    ['Data Source',c.source==='sheet'?'📊 Google Sheet':'📄 Google Doc'],
+    ['Email Tone',c.tone],['Last Reply',c.lastReply]
+  ].map(([k,v])=>`
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span style="color:var(--text3)">${k}</span><span style="font-weight:600">${v}</span>
+    </div>`).join('');
+
+  nav('client-detail', null);
+}
+</script>
+</body>
+</html>
