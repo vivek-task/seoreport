@@ -308,6 +308,972 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
       </div>
       <div class="card mb-18">
         <div style="font-weight:700;font-size:14px;margin-bottom:18px">🤖 AI Analysis Results</div>
-        <div class="grid-4"><div id="ring-0"></div><div id="ring-1"></div><div id="ring-2"></div><div id="ring-3"></div></div>
+        <div class="grid-4">
+          <div id="ring-0"></div>
+          <div id="ring-1"></div>
+          <div id="ring-2"></div>
+          <div id="ring-3"></div>
+        </div>
       </div>
-      <div class="card mb-18" id="rr-issues-card"><div style="font
+      <div class="card mb-18" id="rr-issues-card">
+        <div style="font-weight:700;font-size:14px;margin-bottom:14px">⚠️ Issues Found</div>
+        <div id="rr-issues"></div>
+      </div>
+      <div class="grid-2 mb-18">
+        <div class="win-box">
+          <div class="win-title">🏆 Key Wins</div>
+          <div id="rr-wins"></div>
+        </div>
+        <div class="step-box">
+          <div class="step-title">📌 Next Steps</div>
+          <div id="rr-steps"></div>
+        </div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-title">📄 Executive Summary</div>
+        <div id="rr-summary" class="summary-text"></div>
+      </div>
+      <div class="card mb-18">
+        <div class="flex justify-between items-center mb-18">
+          <div style="font-weight:700;font-size:14px">📧 AI-Drafted Email</div>
+          <button class="btn btn-ghost btn-sm" onclick="regenerateEmail()">↻ Regenerate</button>
+        </div>
+        <div class="form-group">
+          <label class="label">Subject Line</label>
+          <input class="form-input" id="rr-subject">
+        </div>
+        <div class="form-group">
+          <label class="label">Email Body</label>
+          <textarea class="form-textarea" id="rr-body" style="min-height:155px"></textarea>
+        </div>
+        <div class="info-note">ℹ️ Copy this email → send manually from Gmail → click "Mark as Sent" below</div>
+      </div>
+      <div class="card mb-18">
+        <label class="label">📝 Admin Notes <span style="color:var(--text3);font-weight:400;font-size:11px">(Internal only)</span></label>
+        <textarea class="form-textarea" id="rr-notes" style="min-height:75px;margin-top:8px" placeholder="Add internal notes for your team..."></textarea>
+        <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="saveNotes()">Save Notes</button>
+      </div>
+      <div class="action-bar">
+        <div>
+          <div id="rr-action-label" style="font-weight:700;font-size:15px"></div>
+          <div id="rr-action-email" style="font-size:11px;color:var(--text3);margin-top:4px"></div>
+        </div>
+        <div class="flex gap-12" id="rr-action-btns"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ============================================
+// SEO AUTOPILOT - COMPLETE JAVASCRIPT
+// ============================================
+
+// ── CONFIGURATION ──────────────────────────
+const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000/api'  // Local development
+  : 'https://seo-automation-p01f.onrender.com/api'; // Production
+
+// ── STATE VARIABLES ────────────────────────
+let TOKEN = localStorage.getItem('seo_token') || '';
+let ALL_PROJECTS = [];
+let ALL_CLIENTS = [];
+let CURRENT_REPORT = null;
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+// Toast notification
+function toast(message, type = 'info') {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// API helper function
+async function api(method, endpoint, body = null) {
+  const url = `${API_URL}${endpoint}`;
+  const options = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  };
+  
+  if (TOKEN) {
+    options.headers['Authorization'] = `Bearer ${TOKEN}`;
+  }
+  
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+  
+  const response = await fetch(url, options);
+  const data = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(data.message || 'API request failed');
+  }
+  
+  if (!data.success) {
+    throw new Error(data.message || 'Request failed');
+  }
+  
+  return data;
+}
+
+// ============================================
+// AUTHENTICATION FUNCTIONS
+// ============================================
+
+// LOGIN FUNCTION
+async function doLogin() {
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  const btn = document.getElementById('login-btn');
+  const errorDiv = document.getElementById('login-error');
+  
+  // Validate inputs
+  if (!email || !password) {
+    errorDiv.textContent = 'Email and password are required';
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  // Show loading state
+  btn.innerHTML = '<span class="spinner"></span> Signing in…';
+  btn.disabled = true;
+  errorDiv.style.display = 'none';
+  
+  try {
+    console.log('Attempting login with:', { email });
+    
+    const data = await api('POST', '/auth/login', { 
+      email: email.trim(), 
+      password: password 
+    });
+    
+    console.log('Login successful:', data);
+    
+    // Store token and user data
+    TOKEN = data.token;
+    localStorage.setItem('seo_token', TOKEN);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    
+    // Update sidebar with user info
+    document.getElementById('sidebar-user-name').textContent = data.user.name || 'Admin';
+    document.getElementById('sidebar-user-role').textContent = data.user.role || 'Admin';
+    
+    // Hide login screen, show main app
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'flex';
+    
+    // Load dashboard data
+    loadDashboard();
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    errorDiv.textContent = error.message || 'Login failed. Please check your credentials.';
+    errorDiv.style.display = 'block';
+  } finally {
+    // Reset button
+    btn.innerHTML = 'Sign In →';
+    btn.disabled = false;
+  }
+}
+
+// Logout function
+function doLogout() {
+  TOKEN = '';
+  localStorage.removeItem('seo_token');
+  localStorage.removeItem('user');
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  
+  // Clear any sensitive data
+  ALL_PROJECTS = [];
+  ALL_CLIENTS = [];
+  CURRENT_REPORT = null;
+}
+
+// Check for existing session on page load
+if (TOKEN) {
+  console.log('Token found, attempting auto-login...');
+  api('GET', '/auth/me')
+    .then(data => {
+      document.getElementById('sidebar-user-name').textContent = data.user.name || 'Admin';
+      document.getElementById('sidebar-user-role').textContent = data.user.role || 'Admin';
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('main-app').style.display = 'flex';
+      loadDashboard();
+    })
+    .catch(error => {
+      console.error('Auto-login failed:', error);
+      TOKEN = '';
+      localStorage.removeItem('seo_token');
+    });
+}
+
+// ============================================
+// NAVIGATION FUNCTIONS
+// ============================================
+
+function nav(pageId, btnEl) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  
+  // Show selected page
+  const page = document.getElementById('page-' + pageId);
+  if (page) page.classList.add('active');
+  
+  // Update active button in sidebar
+  if (btnEl) {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+  }
+  
+  // Load page-specific data
+  if (pageId === 'dashboard') loadDashboard();
+  if (pageId === 'projects') loadProjects();
+  if (pageId === 'clients') loadClients();
+  if (pageId === 'deadlines') loadDeadlines();
+  if (pageId === 'new-report') loadNewReportForm();
+}
+
+function toggleForm(formId) {
+  const form = document.getElementById(formId);
+  if (form) form.classList.toggle('hidden');
+}
+
+// ============================================
+// DASHBOARD FUNCTIONS
+// ============================================
+
+async function loadDashboard() {
+  // Update date
+  const now = new Date();
+  document.getElementById('dash-date').textContent = now.toLocaleDateString('en-IN', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+  
+  try {
+    const data = await api('GET', '/dashboard');
+    console.log('Dashboard data:', data);
+    
+    // Update stats
+    document.getElementById('stat-projects').textContent = data.stats?.activeProjects || '0';
+    document.getElementById('stat-clients').textContent = data.stats?.totalClients || '0';
+    document.getElementById('stat-pending').textContent = data.stats?.pendingReview || '0';
+    document.getElementById('stat-overdue').textContent = data.stats?.overdueCount || '0';
+    
+    // Load reports
+    const reportsCol = document.getElementById('dash-reports-col');
+    const reports = data.recentReports || [];
+    
+    if (reports.length === 0) {
+      reportsCol.innerHTML = '<div style="color:var(--text3);font-size:13px">No reports yet.</div>';
+    } else {
+      let html = '';
+      
+      // Group reports by status
+      const critical = reports.filter(r => (r.ai_analysis?.overallScore || 100) < 60);
+      const warning = reports.filter(r => {
+        const score = r.ai_analysis?.overallScore || 100;
+        return score >= 60 && score < 75;
+      });
+      const good = reports.filter(r => {
+        const score = r.ai_analysis?.overallScore || 100;
+        return score >= 75 && r.admin_status === 'pending_review';
+      });
+      const approved = reports.filter(r => r.admin_status === 'approved');
+      
+      // Critical section
+      if (critical.length > 0) {
+        html += `<div class="section-head"><div class="section-dot" style="background:#ef4444;box-shadow:0 0 8px #ef4444"></div><span style="font-weight:700;font-size:12px;color:#f87171;letter-spacing:.04em">🚨 IMMEDIATE ATTENTION (${critical.length})</span></div>`;
+        critical.forEach(r => html += reportRow(r));
+      }
+      
+      // Warning section
+      if (warning.length > 0) {
+        html += `<div class="section-head mt-18"><div class="section-dot" style="background:#f59e0b"></div><span style="font-weight:700;font-size:12px;color:#fbbf24;letter-spacing:.04em">⚠️ REVIEW NEEDED (${warning.length})</span></div>`;
+        warning.forEach(r => html += reportRow(r));
+      }
+      
+      // Good section
+      if (good.length > 0) {
+        html += `<div class="section-head mt-18"><div class="section-dot" style="background:#10b981;box-shadow:0 0 8px #10b981"></div><span style="font-weight:700;font-size:12px;color:#34d399;letter-spacing:.04em">✅ GOOD — PENDING REVIEW (${good.length})</span></div>`;
+        good.forEach(r => html += reportRow(r));
+      }
+      
+      // Approved section
+      if (approved.length > 0) {
+        html += `<div class="section-head mt-18"><div class="section-dot" style="background:#06b6d4"></div><span style="font-weight:700;font-size:12px;color:#67e8f9;letter-spacing:.04em">📬 APPROVED — READY TO SEND (${approved.length})</span></div>`;
+        approved.forEach(r => html += reportRow(r));
+      }
+      
+      reportsCol.innerHTML = html || '<div style="color:var(--text3);font-size:13px">No pending reports.</div>';
+    }
+    
+    // Load deadlines
+    const deadlinesEl = document.getElementById('dash-deadlines');
+    const deadlines = [...(data.overdueDeadlines || []), ...(data.dueSoonDeadlines || [])];
+    
+    if (deadlines.length === 0) {
+      deadlinesEl.innerHTML = '<div style="color:var(--text3);font-size:12px">No urgent deadlines 🎉</div>';
+    } else {
+      deadlinesEl.innerHTML = deadlines.map(dl => {
+        const days = Math.round((new Date(dl.due_date) - Date.now()) / 86400000);
+        const cls = dl.status === 'overdue' ? 'deadline-overdue' : 'deadline-soon';
+        const color = dl.status === 'overdue' ? '#ef4444' : '#f59e0b';
+        const label = dl.status === 'overdue' 
+          ? `${Math.abs(days)} days overdue` 
+          : days === 0 ? 'Due Today!' 
+          : `${days} day${days !== 1 ? 's' : ''} left`;
+        
+        return `<div class="deadline-card ${cls}">
+          <div style="font-weight:700;font-size:13px">${dl.clients?.company_name || '—'}</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${dl.report_period}</div>
+          <div style="font-size:11px;font-weight:700;color:${color};margin-top:5px">${label}</div>
+        </div>`;
+      }).join('');
+    }
+    
+    // Load churn risk
+    const churnEl = document.getElementById('dash-churn');
+    const churn = data.criticalClients || [];
+    
+    if (churn.length === 0) {
+      churnEl.innerHTML = '<div style="color:var(--text3);font-size:12px">No churn risks 🎉</div>';
+    } else {
+      churnEl.innerHTML = churn.map(c => `
+        <div style="padding:10px 12px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:8px;margin-bottom:8px">
+          <div style="font-weight:700;font-size:13px">${c.company_name}</div>
+          <div style="font-size:11px;color:#ef4444;margin-top:4px">Health: ${c.health_score}% · Risk: ${c.churn_risk?.toUpperCase() || 'UNKNOWN'}</div>
+        </div>
+      `).join('');
+    }
+    
+  } catch (error) {
+    console.error('Dashboard error:', error);
+    toast('Failed to load dashboard: ' + error.message, 'error');
+  }
+}
+
+function reportRow(report) {
+  const score = report.ai_analysis?.overallScore ?? '—';
+  const scoreClass = score >= 75 ? 'badge-green' : score >= 55 ? 'badge-amber' : 'badge-red';
+  const freqClass = report.report_frequency === 'weekly' ? 'badge-cyan' 
+    : report.report_frequency === 'biweekly' ? 'badge-indigo' 
+    : 'badge-violet';
+  
+  return `<div class="report-row" onclick="openReport('${report.id}')">
+    <div>
+      <div class="flex items-center gap-8" style="margin-bottom:3px">
+        <span class="report-client">${report.clients?.company_name || '—'}</span>
+        <span class="badge ${freqClass}">${(report.report_frequency || '').toUpperCase()}</span>
+      </div>
+      <div class="report-meta">${report.report_period} · ${report.projects?.name || '—'}</div>
+    </div>
+    <div class="flex items-center gap-8">
+      <span class="badge ${scoreClass}">${score}/100</span>
+      <span style="color:#6366f1;font-size:11px;font-weight:600">›</span>
+    </div>
+  </div>`;
+}
+
+// ============================================
+// PROJECTS FUNCTIONS
+// ============================================
+
+async function loadProjects() {
+  try {
+    const data = await api('GET', '/projects?limit=50');
+    ALL_PROJECTS = data.projects || [];
+    
+    document.getElementById('proj-sub').textContent = `${ALL_PROJECTS.length} active projects`;
+    
+    const list = document.getElementById('proj-list');
+    
+    if (ALL_PROJECTS.length === 0) {
+      list.innerHTML = '<div style="color:var(--text3);font-size:13px">No projects yet. Click "+ Add Project" to create one.</div>';
+      return;
+    }
+    
+    list.innerHTML = ALL_PROJECTS.map(p => {
+      const srcBadge = p.data_source === 'sheet' ? '📊 SHEET' 
+        : p.data_source === 'doc' ? '📄 DOC' 
+        : '✍️ MANUAL';
+      
+      const freqClass = p.report_frequency === 'weekly' ? 'badge-cyan' 
+        : p.report_frequency === 'biweekly' ? 'badge-indigo' 
+        : 'badge-violet';
+      
+      const due = p.next_deadline 
+        ? new Date(p.next_deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) 
+        : '—';
+      
+      const isOverdue = p.next_deadline && new Date(p.next_deadline) < new Date();
+      
+      return `<div class="card" style="padding:15px 20px${isOverdue ? ';background:rgba(239,68,68,.03);border-color:rgba(239,68,68,.2)' : ''}">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-12">
+            <div style="width:40px;height:40px;background:rgba(99,102,241,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">📁</div>
+            <div>
+              <div style="font-weight:700;font-size:14px">${p.name}</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">${p.clients?.company_name || '—'} · ${p.report_frequency || '—'}</div>
+            </div>
+          </div>
+          <div class="flex gap-8">
+            <span class="badge ${freqClass}">${(p.report_frequency || '').toUpperCase()}</span>
+            <span class="badge badge-green">${srcBadge}</span>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:${isOverdue ? '#ef4444' : 'var(--text3)'}">
+          ${isOverdue ? '⚠️ OVERDUE — ' : 'Next: '}
+          <strong style="color:${isOverdue ? '#ef4444' : 'var(--text2)'}">${due}</strong> · 
+          Assigned: <strong style="color:var(--text2)">${p.assigned_to || '—'}</strong>
+        </div>
+      </div>`;
+    }).join('');
+    
+    populateClientDropdown();
+    
+  } catch (error) {
+    console.error('Projects error:', error);
+    toast('Failed to load projects: ' + error.message, 'error');
+  }
+}
+
+async function populateClientDropdown() {
+  if (ALL_CLIENTS.length === 0) {
+    try {
+      const data = await api('GET', '/clients?limit=100');
+      ALL_CLIENTS = data.clients || [];
+    } catch (error) {
+      console.error('Failed to load clients for dropdown:', error);
+    }
+  }
+  
+  const select = document.getElementById('proj-client-id');
+  select.innerHTML = '<option value="">— Select Client —</option>' + 
+    ALL_CLIENTS.map(c => `<option value="${c.id}">${c.company_name}</option>`).join('');
+}
+
+async function createProject() {
+  const name = document.getElementById('proj-name').value.trim();
+  const clientId = document.getElementById('proj-client-id').value;
+  const reportFreq = document.getElementById('proj-freq').value;
+  const assignedTo = document.getElementById('proj-assigned').value.trim();
+  const googleDocLink = document.getElementById('proj-doc').value.trim();
+  const googleSheetLink = document.getElementById('proj-sheet').value.trim();
+  
+  if (!name || !clientId) {
+    toast('Project name and client are required', 'error');
+    return;
+  }
+  
+  const btn = document.getElementById('proj-submit-btn');
+  btn.innerHTML = '<span class="spinner"></span> Creating…';
+  btn.disabled = true;
+  
+  try {
+    await api('POST', '/projects', {
+      name,
+      clientId,
+      reportFrequency: reportFreq,
+      assignedTo,
+      googleDocLink,
+      googleSheetLink,
+      dataSource: googleSheetLink ? 'sheet' : googleDocLink ? 'doc' : 'inherit'
+    });
+    
+    toast('Project created successfully!', 'success');
+    toggleForm('proj-form');
+    document.getElementById('proj-name').value = '';
+    loadProjects();
+    
+  } catch (error) {
+    toast(error.message, 'error');
+  } finally {
+    btn.innerHTML = 'Create Project';
+    btn.disabled = false;
+  }
+}
+
+// ============================================
+// CLIENTS FUNCTIONS
+// ============================================
+
+async function loadClients() {
+  try {
+    const data = await api('GET', '/clients?limit=100');
+    ALL_CLIENTS = data.clients || [];
+    
+    document.getElementById('clients-sub').textContent = `${ALL_CLIENTS.length} active clients`;
+    
+    const list = document.getElementById('client-list');
+    
+    if (ALL_CLIENTS.length === 0) {
+      list.innerHTML = '<div style="color:var(--text3);font-size:13px">No clients yet. Click "+ Add Client" to create one.</div>';
+      return;
+    }
+    
+    list.innerHTML = ALL_CLIENTS.map(c => {
+      const healthColor = c.health_score >= 80 ? '#10b981' 
+        : c.health_score >= 60 ? '#f59e0b' 
+        : '#ef4444';
+      
+      const riskBadge = c.churn_risk === 'low' ? 'badge-green' 
+        : c.churn_risk === 'medium' ? 'badge-amber' 
+        : 'badge-red';
+      
+      const riskLabel = c.churn_risk === 'low' ? '🟢 LOW' 
+        : c.churn_risk === 'medium' ? '🟡 MEDIUM' 
+        : '🔴 HIGH';
+      
+      const letter = (c.company_name || '?')[0].toUpperCase();
+      const bgColor = c.churn_risk === 'high' ? 'linear-gradient(135deg,#ef4444,#dc2626)' 
+        : c.churn_risk === 'medium' ? 'linear-gradient(135deg,#f59e0b,#d97706)' 
+        : 'linear-gradient(135deg,#6366f1,#8b5cf6)';
+      
+      return `<div class="card" style="padding:13px 20px;cursor:pointer" onclick="openClient('${c.id}')">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-12">
+            <div style="width:42px;height:42px;border-radius:12px;background:${bgColor};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px">${letter}</div>
+            <div>
+              <div style="font-weight:700;font-size:14px">${c.company_name}</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">${c.name || '—'} · ${c.email || '—'}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-12">
+            <div style="text-align:right">
+              <div style="font-weight:900;font-size:22px;color:${healthColor}">${c.health_score || '—'}%</div>
+              <div style="font-size:10px;color:var(--text3)">Health</div>
+            </div>
+            <span class="badge ${riskBadge}">${riskLabel}</span>
+            <span style="color:var(--text3)">›</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    
+  } catch (error) {
+    console.error('Clients error:', error);
+    toast('Failed to load clients: ' + error.message, 'error');
+  }
+}
+
+async function createClient() {
+  const name = document.getElementById('c-name').value.trim();
+  const companyName = document.getElementById('c-company').value.trim();
+  const email = document.getElementById('c-email').value.trim();
+  
+  if (!name || !companyName || !email) {
+    toast('Name, company and email are required', 'error');
+    return;
+  }
+  
+  const btn = document.getElementById('client-submit-btn');
+  btn.innerHTML = '<span class="spinner"></span> Creating…';
+  btn.disabled = true;
+  
+  try {
+    await api('POST', '/clients', {
+      name,
+      companyName,
+      email,
+      phone: document.getElementById('c-phone').value.trim(),
+      industry: document.getElementById('c-industry').value.trim(),
+      website: document.getElementById('c-website').value.trim(),
+      googleSheetLink: document.getElementById('c-sheet').value.trim(),
+      googleDocLink: document.getElementById('c-doc').value.trim(),
+      dataSource: document.getElementById('c-source').value,
+      reportFrequency: document.getElementById('c-freq').value,
+      emailTone: document.getElementById('c-tone').value,
+    });
+    
+    toast('Client added successfully!', 'success');
+    toggleForm('client-form');
+    
+    // Clear form
+    ['c-name', 'c-company', 'c-email', 'c-phone', 'c-industry', 'c-website', 'c-sheet', 'c-doc'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    
+    loadClients();
+    
+  } catch (error) {
+    toast(error.message, 'error');
+  } finally {
+    btn.innerHTML = 'Add Client';
+    btn.disabled = false;
+  }
+}
+
+async function openClient(id) {
+  try {
+    const data = await api('GET', `/clients/${id}`);
+    const client = data.client;
+    
+    document.getElementById('cd-title').textContent = client.company_name;
+    
+    const healthColor = client.health_score >= 80 ? '#10b981' 
+      : client.health_score >= 60 ? '#f59e0b' 
+      : '#ef4444';
+    
+    document.getElementById('cd-score').style.color = healthColor;
+    document.getElementById('cd-score').textContent = (client.health_score || '—') + '%';
+    document.getElementById('cd-risk').textContent = client.churn_risk === 'low' ? '🟢 LOW' 
+      : client.churn_risk === 'medium' ? '🟡 MEDIUM' 
+      : '🔴 HIGH';
+    
+    const infoHtml = [
+      ['Contact', client.name || '—'],
+      ['Email', client.email || '—'],
+      ['Phone', client.phone || '—'],
+      ['Industry', client.industry || '—'],
+      ['Website', client.website || '—'],
+      ['Report Frequency', client.report_frequency || '—'],
+      ['Data Source', client.data_source === 'sheet' ? '📊 Google Sheet' 
+        : client.data_source === 'doc' ? '📄 Google Doc' 
+        : '✍️ Manual'],
+      ['Email Tone', client.email_tone || '—'],
+    ].map(([k, v]) => `
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <span style="color:var(--text3)">${k}</span>
+        <span style="font-weight:600">${v}</span>
+      </div>
+    `).join('');
+    
+    document.getElementById('cd-info').innerHTML = infoHtml;
+    
+    nav('client-detail', null);
+    
+  } catch (error) {
+    console.error('Client detail error:', error);
+    toast('Failed to load client details: ' + error.message, 'error');
+  }
+}
+
+// ============================================
+// DEADLINES FUNCTIONS
+// ============================================
+
+async function loadDeadlines() {
+  try {
+    const data = await api('GET', '/deadlines?limit=30');
+    const deadlines = data.deadlines || [];
+    
+    const list = document.getElementById('deadlines-list');
+    
+    if (deadlines.length === 0) {
+      list.innerHTML = '<div style="color:var(--text3);font-size:13px">No deadlines found.</div>';
+      return;
+    }
+    
+    list.innerHTML = deadlines.map(dl => {
+      const days = Math.round((new Date(dl.due_date) - Date.now()) / 86400000);
+      const isOverdue = dl.status === 'overdue';
+      const isSoon = dl.status === 'due_soon';
+      
+      const bgStyle = isOverdue ? 'background:rgba(239,68,68,.04);border-color:rgba(239,68,68,.25)' 
+        : isSoon ? 'background:rgba(245,158,11,.04);border-color:rgba(245,158,11,.25)' 
+        : '';
+      
+      const icon = isOverdue ? '🚨' : isSoon ? '⏰' : '✅';
+      const iconBg = isOverdue ? 'rgba(239,68,68,.12)' 
+        : isSoon ? 'rgba(245,158,11,.12)' 
+        : 'rgba(16,185,129,.1)';
+      
+      const color = isOverdue ? '#ef4444' : isSoon ? '#f59e0b' : '#10b981';
+      
+      const label = isOverdue ? `${Math.abs(days)} days overdue` 
+        : days === 0 ? 'Due Today!' 
+        : days === 1 ? 'Due Tomorrow!' 
+        : `${days} days left`;
+      
+      const badgeClass = isOverdue ? 'badge-red' : isSoon ? 'badge-amber' : 'badge-green';
+      const badgeLabel = isOverdue ? 'OVERDUE' : isSoon ? 'DUE SOON' : 'UPCOMING';
+      
+      return `<div class="card" style="padding:15px 20px;display:flex;justify-content:space-between;align-items:center;${bgStyle}">
+        <div class="flex items-center gap-16">
+          <div style="width:40px;height:40px;border-radius:10px;background:${iconBg};display:flex;align-items:center;justify-content:center;font-size:18px">${icon}</div>
+          <div>
+            <div style="font-weight:700;font-size:14px">${dl.clients?.company_name || '—'}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px">${dl.projects?.name || '—'} · ${dl.report_period}</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:13px;font-weight:700;color:${color}">${label}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${new Date(dl.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+          <div style="margin-top:6px"><span class="badge ${badgeClass}">${badgeLabel}</span></div>
+        </div>
+      </div>`;
+    }).join('');
+    
+  } catch (error) {
+    console.error('Deadlines error:', error);
+    toast('Failed to load deadlines: ' + error.message, 'error');
+  }
+}
+
+// ============================================
+// NEW REPORT FUNCTIONS
+// ============================================
+
+async function loadNewReportForm() {
+  try {
+    if (ALL_PROJECTS.length === 0) {
+      const data = await api('GET', '/projects?limit=100');
+      ALL_PROJECTS = data.projects || [];
+    }
+    
+    const select = document.getElementById('nr-project');
+    select.innerHTML = '<option value="">— Choose project —</option>' + 
+      ALL_PROJECTS.map(p => `<option value="${p.id}">${p.clients?.company_name || '?'} — ${p.name} (${p.report_frequency || '—'})</option>`).join('');
+    
+  } catch (error) {
+    console.error('Error loading projects for report:', error);
+    toast('Failed to load projects: ' + error.message, 'error');
+  }
+}
+
+async function submitReport() {
+  const projectId = document.getElementById('nr-project').value;
+  const reportPeriod = document.getElementById('nr-period').value.trim();
+  const manualContent = document.getElementById('nr-content').value.trim();
+  
+  if (!projectId || !reportPeriod) {
+    toast('Select a project and enter a report period', 'error');
+    return;
+  }
+  
+  const btn = document.getElementById('nr-submit-btn');
+  btn.innerHTML = '<span class="spinner"></span> Submitting & running AI analysis…';
+  btn.disabled = true;
+  
+  try {
+    await api('POST', '/reports', {
+      projectId,
+      reportPeriod,
+      manualContent: manualContent || undefined
+    });
+    
+    toast('Report submitted! AI is analyzing — check back in ~30 seconds', 'success');
+    
+    // Clear form
+    document.getElementById('nr-period').value = '';
+    document.getElementById('nr-content').value = '';
+    
+    // Navigate back to dashboard after delay
+    setTimeout(() => {
+      nav('dashboard', null);
+      loadDashboard();
+    }, 2000);
+    
+  } catch (error) {
+    toast(error.message, 'error');
+  } finally {
+    btn.innerHTML = 'Submit for AI Analysis →';
+    btn.disabled = false;
+  }
+}
+
+// ============================================
+// REPORT REVIEW FUNCTIONS
+// ============================================
+
+async function openReport(id) {
+  try {
+    const data = await api('GET', `/reports/${id}`);
+    const report = data.report;
+    CURRENT_REPORT = report;
+    
+    const ai = report.ai_analysis || {};
+    const email = report.draft_email || {};
+    
+    document.getElementById('rr-title').textContent = `${report.clients?.company_name || '—'} — ${report.report_period}`;
+    document.getElementById('rr-sub').textContent = `${report.projects?.name || '—'} · ${report.report_frequency || '—'} report`;
+    
+    // Status badge
+    const statusBadge = document.getElementById('rr-status-badge');
+    const statusMap = {
+      'sent': '✅ SENT',
+      'approved': '✓ APPROVED',
+      'pending_review': 'PENDING REVIEW',
+      'pending_ai': '⏳ AI RUNNING'
+    };
+    const classMap = {
+      'sent': 'badge-green',
+      'approved': 'badge-cyan',
+      'pending_review': 'badge-indigo',
+      'pending_ai': 'badge-amber'
+    };
+    
+    statusBadge.textContent = statusMap[report.admin_status] || report.admin_status;
+    statusBadge.className = 'badge ' + (classMap[report.admin_status] || 'badge-indigo');
+    
+    // Score rings
+    const scores = [ai.overallScore, ai.contentQuality, ai.dataAccuracy, ai.clientGoalsMatch];
+    const labels = ['Overall Score', 'Content Quality', 'Data Accuracy', 'Goals Match'];
+    
+    scores.forEach((score, i) => {
+      const value = score ?? 0;
+      const color = value >= 75 ? '#10b981' : value >= 55 ? '#f59e0b' : '#ef4444';
+      const degrees = (value / 100) * 360;
+      
+      document.getElementById('ring-' + i).innerHTML = `
+        <div style="text-align:center">
+          <div class="score-ring" style="background:conic-gradient(${color} ${degrees}deg, rgba(255,255,255,.08) 0)">
+            <div class="score-inner" style="color:${color}">${value}</div>
+          </div>
+          <div class="score-label">${labels[i]}</div>
+        </div>
+      `;
+    });
+    
+    // Issues
+    const issues = ai.issues || [];
+    const issuesCard = document.getElementById('rr-issues-card');
+    
+    if (issues.length === 0) {
+      issuesCard.style.display = 'none';
+    } else {
+      issuesCard.style.display = 'block';
+      document.getElementById('rr-issues').innerHTML = issues.map(issue => `
+        <div class="issue issue-${issue.severity}">
+          <span class="issue-icon" style="color:${issue.severity === 'critical' ? '#ef4444' : issue.severity === 'warning' ? '#f59e0b' : '#6366f1'}">
+            ${issue.severity === 'info' ? 'ℹ' : '⚠'}
+          </span>
+          <span>${issue.message}</span>
+        </div>
+      `).join('');
+    }
+    
+    // Wins, Steps, Summary
+    document.getElementById('rr-wins').innerHTML = (ai.keyWins || []).map(w => `<div class="win-item">• ${w}</div>`).join('') 
+      || '<div class="win-item" style="color:var(--text3)">No wins recorded yet</div>';
+    
+    document.getElementById('rr-steps').innerHTML = (ai.nextSteps || []).map(s => `<div class="step-item">• ${s}</div>`).join('') 
+      || '<div class="step-item" style="color:var(--text3)">No steps recorded yet</div>';
+    
+    document.getElementById('rr-summary').textContent = ai.executiveSummary || '—';
+    
+    // Email fields
+    document.getElementById('rr-subject').value = email.subject || '';
+    document.getElementById('rr-body').value = email.body || '';
+    document.getElementById('rr-notes').value = report.admin_notes || '';
+    
+    document.getElementById('rr-action-email').textContent = report.clients?.email ? 'To: ' + report.clients.email : '';
+    
+    updateActionBar();
+    nav('report-review', null);
+    
+  } catch (error) {
+    console.error('Report error:', error);
+    toast('Failed to load report: ' + error.message, 'error');
+  }
+}
+
+function updateActionBar() {
+  const report = CURRENT_REPORT;
+  if (!report) return;
+  
+  const label = document.getElementById('rr-action-label');
+  const buttons = document.getElementById('rr-action-btns');
+  
+  if (report.admin_status === 'sent') {
+    label.textContent = '✅ Report marked as sent!';
+    buttons.innerHTML = '<span class="badge badge-green" style="font-size:12px;padding:6px 14px">✅ SENT</span>';
+  } else if (report.admin_status === 'approved') {
+    label.textContent = 'Report approved — copy email & send manually';
+    buttons.innerHTML = `<button class="btn btn-green" onclick="markSent()">✓ Mark as Sent</button>`;
+  } else if (report.admin_status === 'pending_ai') {
+    label.textContent = '⏳ AI analysis in progress…';
+    buttons.innerHTML = `<button class="btn btn-ghost" onclick="openReport('${report.id}')">↻ Refresh</button>`;
+  } else {
+    label.textContent = `Ready to approve ${report.clients?.company_name || 'this'} report?`;
+    buttons.innerHTML = `<button class="btn btn-primary" onclick="approveReport()">✓ Approve Report</button>`;
+  }
+}
+
+async function approveReport() {
+  try {
+    const data = await api('POST', `/reports/${CURRENT_REPORT.id}/approve`);
+    CURRENT_REPORT = data.report;
+    updateActionBar();
+    toast('Report approved!', 'success');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+async function markSent() {
+  try {
+    const subject = document.getElementById('rr-subject').value;
+    const data = await api('POST', `/reports/${CURRENT_REPORT.id}/mark-sent`, { emailSubject: subject });
+    CURRENT_REPORT = data.report;
+    updateActionBar();
+    toast('Marked as sent!', 'success');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+async function saveNotes() {
+  try {
+    const adminNotes = document.getElementById('rr-notes').value;
+    await api('PATCH', `/reports/${CURRENT_REPORT.id}/admin-notes`, { adminNotes });
+    toast('Notes saved!', 'success');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+async function regenerateEmail() {
+  try {
+    toast('Regenerating email…', 'info');
+    const data = await api('POST', `/reports/${CURRENT_REPORT.id}/regenerate-email`);
+    document.getElementById('rr-subject').value = data.draftEmail?.subject || '';
+    document.getElementById('rr-body').value = data.draftEmail?.body || '';
+    toast('Email regenerated!', 'success');
+  } catch (error) {
+    toast(error.message, 'error');
+  }
+}
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
+// Set initial date on dashboard
+document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-IN', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric'
+});
+
+// Add enter key handler for login
+document.getElementById('login-password').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') doLogin();
+});
+
+console.log('SEO Autopilot loaded. API URL:', API_URL);
+console.log('Token exists:', !!TOKEN);
+</script>
+</body>
+</html>
